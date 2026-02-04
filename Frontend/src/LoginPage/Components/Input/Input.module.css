@@ -1,0 +1,23 @@
+.inputContainer{
+    box-sizing: border-box;
+    min-height:fit-content;
+    background-color: transparent;
+    color:white;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    padding:10px 20px;
+    width: 100%;
+}
+
+.input{
+    background: none;
+    color: #ccc;
+    border: solid red 1px;
+    border:none;
+    width: 100%;
+    height:30px;
+    font-size: 1em;
+    &:focus{
+        outline: none;
+    }
+}

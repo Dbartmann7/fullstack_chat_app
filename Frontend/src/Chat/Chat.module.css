@@ -1,0 +1,19 @@
+.chat{
+  box-sizing: border-box;
+  max-width: 70%;
+  width: max-content;
+  min-height: 40px;
+  height: max-content;
+  border-radius: 15px;
+  padding: 10px 20px 10px;
+  display: flex;
+  align-items: center;
+  
+  background-color: rgba(0, 0, 0, 0.4);
+  color: #ffffff;
+}
+
+.myChat{
+  align-self: flex-end;
+  transform: translateX(-16px);
+}

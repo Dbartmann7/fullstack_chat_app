@@ -1,0 +1,45 @@
+.loginSection{
+    display: flex;
+    justify-content:space-evenly;
+    max-height: 50cqh;
+}
+
+
+.title{
+    margin:0;
+    font-size: 2em;
+    font-weight: 500;
+}
+
+.inputs{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content:space-evenly;
+    gap:10px;
+    height:60%;
+    width: 100%;
+    
+}
+
+.loginBtn{
+    background-color: transparent;
+    color:white;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    height:40px;
+    width:100px;
+    padding:0;
+    font-size: 1.2em;
+    font-weight:400;
+    transition: transform 0.5s ease, background-color 0.3s ease;
+
+
+
+    &:hover{
+        transform: scale(1.1);
+        background-color: rgba(47, 72, 96, 0.5);
+    }
+  
+
+}

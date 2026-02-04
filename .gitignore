@@ -1,0 +1,14 @@
+# dependencies
+Frontend/node_modules
+Backend/node_modules
+
+
+# env files
+Frontend/.env
+Backend/.env
+
+# prod
+Backend/build
+
+# noise
+TODO.txt

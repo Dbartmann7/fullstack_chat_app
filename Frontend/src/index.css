@@ -1,0 +1,15 @@
+#root{
+    margin:0;
+    width:100%;
+    height:100dvh;
+}
+body{
+    margin:0;
+    font-family: "Bitcount Single";
+}
+input,
+button
+{
+  font-family: inherit;
+}
+

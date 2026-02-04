@@ -1,0 +1,29 @@
+.container{
+    box-sizing: border-box;
+    width:100%;
+    min-height:fit-content;
+    background-color: transparent;
+    color:white;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    padding:10px 20px;
+}
+
+.input{
+    line-height: 1.2em; 
+    line-break: strict;
+    min-height: 1em;
+    max-height: 10em;
+    padding-bottom: 0.2em; /* add line height to bottom to make spaces between text and container box equal on top and bottom */
+    
+    border:none;
+    overflow-y: scroll;
+    
+    &:focus{
+        outline: none;
+    }
+}
+
+.passwordInput{
+    width:100%;
+}

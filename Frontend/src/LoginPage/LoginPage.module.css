@@ -1,0 +1,38 @@
+.page{
+    width:100%;
+    height:100%;
+}
+
+.main{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    
+    height:90%;
+    width:80%;
+
+    display: flex;
+    flex-direction: column;
+
+    /* border: 1px solid red; */
+
+    &>section{
+        /* border: 1px solid blue; */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    &>:nth-child(1){
+        flex:6;
+    }
+
+    &>:nth-child(2){
+        flex:4;
+    }    
+}
+
+
+
+
