@@ -7,7 +7,7 @@ import { useSocketHandler } from "@/util/Socket/useSocketHandler"
 import { InputBar } from "./Components/ChatInputBar"
 
 export const ChatPage = () => {
-    const {username, checkCredentials} = use(UserContext);
+    const {username, checkCredentials, logout} = use(UserContext);
     const {isConnected, createSocket, destroySocket, sendMessage} = useSocketHandler();
     const [othername, setOtherName] = useState<string>("other");
 
@@ -61,8 +61,22 @@ export const ChatPage = () => {
   }, [])
 
   useEffect(() => {
+
+    const checkLoggedIn = async () => {
+      console.log("ghagkasjg")
+      const stillLoggedIn = await checkCredentials()
+      console.log(stillLoggedIn)
+      if(!stillLoggedIn){
+        
+        logout()
+      }else{
+        // try reconnecting socket
+      }
+    }
+    
     if(!isConnected){
-      checkCredentials()
+      console.log("hello")
+      checkLoggedIn()
     }
   }, [isConnected])
 

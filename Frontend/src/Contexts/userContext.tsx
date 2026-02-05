@@ -6,6 +6,7 @@ type UserContextValue = {
     username:string,
     isLoggedIn:Boolean
     login: any
+    logout:any
     checkCredentials:any
 }
 
@@ -14,6 +15,7 @@ export const UserContext = createContext<UserContextValue>({
     username:"",
     isLoggedIn:false,
     login: "",
+    logout:"",
     checkCredentials:""
 })
 
@@ -33,7 +35,7 @@ export const UserContextContainer:FC<ContextProps> = ({children}:ContextProps) =
             }
         }catch(err){
             console.log("Login error: " , err)
-            false
+            return false
         }
     }
     
@@ -57,10 +59,17 @@ export const UserContextContainer:FC<ContextProps> = ({children}:ContextProps) =
         }
     }
     
+    const logout = () => {
+        setIsLoggedIn(false)
+        setUsername("")
+    }
+
+
     const value = {
         username:username,
         isLoggedIn:isLoggedIn,
         login:login,
+        logout:logout,
         checkCredentials:isValidJWT
     }
 

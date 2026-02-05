@@ -1,4 +1,4 @@
-import { useState, use } from 'react'
+import { useState, use, useEffect } from 'react'
 import './App.css'
 import { useMediaQuery } from 'usehooks-ts'
 import {UserContext} from './Contexts/userContext'
@@ -7,12 +7,11 @@ import { LoginPage } from './LoginPage'
 
 
 function App() {
-  const {isLoggedIn} = use(UserContext)
+  const {isLoggedIn, login} = use(UserContext)
 
-  const charLimit:number = 300
-  const [inputChat, setInputChat] = useState<string>("")
-
-
+  useEffect(() => {
+    login()
+  }, [])
   return (
 
       <div className='app'>
