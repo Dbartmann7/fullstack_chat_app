@@ -38,7 +38,7 @@ app.get('/', (req, res) => {
     res.send("Server for Chat App")
 })
 
-const JWT_LIFE:number = 60 * 60 * 1000
+const JWT_LIFE:number = 0.05 * 60 * 1000
 /** 
  * Verifies a given JWT token. Returns the data contained in the token if valid, returns null if not. 
  * @param {string | undefined} token - JWT token 
@@ -57,7 +57,6 @@ const verifyJWT = (token:string | undefined): jwtData | null => {
 }
 
 app.post('/login', async (req, res) => {
-
     // check jwt
     const tokenData = verifyJWT(req.cookies.token)
     if(tokenData){
@@ -67,8 +66,11 @@ app.post('/login', async (req, res) => {
 
     // check login info
     const {username, password} = req.body
-    if(!username || !password) return
-
+    if(!username || !password) {
+        res.status(401).send("Invalid username or password")
+        return
+    }
+    
 
     const userData =  (await pool.query(`SELECT * FROM users WHERE username=\'${username}\'`)).rows[0]
     if(!userData){
