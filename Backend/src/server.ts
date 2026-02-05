@@ -57,50 +57,48 @@ const verifyJWT = (token:string | undefined): jwtData | null => {
 }
 
 app.post('/login', async (req, res) => {
-    const tokenData = verifyJWT(req.cookies.token)
 
-    if(!tokenData){
-        const {username, password} = req.body || {}
-        if(!username || !password){
-            res.status(400).send("Login Failed")
+    // check jwt
+    const tokenData = verifyJWT(req.cookies.token)
+    if(tokenData){
+        res.status(200).send({message:"Login Successful", userData:tokenData})
+        return
+    }
+
+    // check login info
+    const {username, password} = req.body
+    if(!username || !password) return
+
+
+    const userData =  (await pool.query(`SELECT * FROM users WHERE username=\'${username}\'`)).rows[0]
+    if(!userData){
+        res.status(401).send("Invalid username or password")
+        return
+    } else {
+        if(password !== userData.password){
+            res.status(401).send("Invalid username or password")
             return
         }else{
-            const userData =  (await pool.query(`SELECT * FROM users WHERE username=\'${username}\'`)).rows[0]
-            if(!userData){
-                res.status(401).send("Invalid username or password")
-                return
-            } else {
-                if(password !== userData.password){
-                    res.status(401).send("Invalid username or password")
-                    return
-                }else{
-                    let payload:jwtData = {username:username}
-                    let token = jwt.sign(payload, JWT_KEY, {expiresIn:`${JWT_LIFE}ms`})
-                    res.cookie("token", token, {
-                        httpOnly:true,
-                        secure: false,
-                        sameSite:"lax",
-                        maxAge: JWT_LIFE
+            let payload:jwtData = {username:username}
+            let token = jwt.sign(payload, JWT_KEY, {expiresIn:`${JWT_LIFE}ms`})
+            res.cookie("token", token, {
+                httpOnly:true,
+                secure: false,
+                sameSite:"lax",
+                maxAge: JWT_LIFE
 
-                    })
-                    .status(200).send("login successful")
-                }
-            }
+            })
+            .status(200).send("login successful")
         }
-    }else{
-        res.status(200).send({message:"Login Successful", userData:tokenData})
-        // , userData:{username:tokenData.username}})
     }
 })
 
 
 
 
-let expIn:number = 0
+
 
 io.on('connection', async (socket) => {
-    const result = await pool.query('SELECT * FROM users;');
-    
     const cookies = cookie.parse(socket.handshake.headers.cookie || "");
     const data:jwtData | null = verifyJWT(cookies.token)
     console.log(data)
@@ -108,21 +106,22 @@ io.on('connection', async (socket) => {
         socket.disconnect()
         return
     }
-    expIn = data.exp! * 1000 - Date.now() || 1
+    let expIn:number = data.exp! * 1000 - Date.now() || 1
     console.log(expIn)
     setTimeout(() => {
         socket.disconnect()
     }, expIn)
 
+    console.log("user connected")
+
     socket.on("disconnect", (reason) => {
-        console.log("user disconnected")
+        console.log(`user disconnected: ${reason}`)
     })
 
     socket.on("sendMessage", (req:ChatData, callback) => {
         
         console.log(req)
         tempChatStorage.push(req)
-        // verifyJWT(socket.handshake.headers.cookie)
         callback({
             status:StatusCodes.OK
         })
