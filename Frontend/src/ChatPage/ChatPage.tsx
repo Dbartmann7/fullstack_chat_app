@@ -1,15 +1,15 @@
-import { use, useState } from "react"
+import { use, useEffect, useState } from "react"
 import styles from "./ChatPage.module.css"
 import { UserContext } from "../Contexts/userContext"
 import type { ChatData } from "@custom-types/types"
 import { ChatArea } from "./Components/ChatArea"
-import { SendMessageBtn } from "@/util/sendMessageBtn"
+import { useSocketHandler } from "@/util/Socket/useSocketHandler"
+import { InputBar } from "./Components/ChatInputBar"
 
 export const ChatPage = () => {
-    const {username} = use(UserContext)
-    const [othername, setOtherName] = useState<string>("other")
-    
-
+    const {username, checkCredentials} = use(UserContext);
+    const {isConnected, createSocket, destroySocket, sendMessage} = useSocketHandler();
+    const [othername, setOtherName] = useState<string>("other");
 
     const [chats, setChats] = useState<ChatData[]>([
     {
@@ -49,15 +49,34 @@ export const ChatPage = () => {
     },
   ])
 
-    return(
-        <div className={styles.mobileMain}>
-          <SendMessageBtn/>
-          <section className={styles.chatMain}>
-            <h1 className={styles.chatHeader}>Chat Name</h1>
-            <ChatArea chats={chats}/>
-            <div className='chat-bar white-outline-glow'>
-            </div>
-          </section>
-        </div>
-    )
+  const [input, setInput] = useState<string>("");
+
+  useEffect(() => {
+    createSocket()
+
+    return () => {
+        destroySocket()
+    }
+
+  }, [])
+
+  useEffect(() => {
+    if(!isConnected){
+      checkCredentials()
+    }
+  }, [isConnected])
+
+  useEffect(() => {
+    console.log(input)
+  }, [input])
+
+  return(
+      <div className={styles.mobileMain}>
+        <section className={styles.chatMain}>
+          <h1 className={styles.chatHeader}>Chat Name</h1>
+          <ChatArea chats={chats}/>
+          <InputBar value={input} setValue={setInput}/>
+        </section>
+      </div>
+  )
 }

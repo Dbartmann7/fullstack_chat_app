@@ -6,13 +6,15 @@ type UserContextValue = {
     username:string,
     isLoggedIn:Boolean
     login: any
+    checkCredentials:any
 }
 
 
 export const UserContext = createContext<UserContextValue>({
     username:"",
     isLoggedIn:false,
-    login: ""
+    login: "",
+    checkCredentials:""
 })
 
 type ContextProps = {
@@ -67,7 +69,8 @@ export const UserContextContainer:FC<ContextProps> = ({children}:ContextProps) =
     const value = {
         username:username,
         isLoggedIn:isLoggedIn,
-        login:login
+        login:login,
+        checkCredentials:checkJWT
     }
 
     return(
