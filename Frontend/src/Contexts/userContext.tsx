@@ -25,27 +25,20 @@ export const UserContextContainer:FC<ContextProps> = ({children}:ContextProps) =
     const [username, setUsername] = useState<string>("")
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
     
-    const checkJWT = async () => {
+    const isValidJWT = async () => {
         try{
             const res = await api.post("/login",{} , {withCredentials:true})
             if(res.status === 200){
-                setIsLoggedIn(true)
-                setUsername(res.data.userData.username)
+                return true
             }
         }catch(err){
             console.log("Login error: " , err)
-            setIsLoggedIn(false)
-            setUsername("")
+            false
         }
     }
-
-    useEffect(() => {
-        checkJWT()
-    }, [])
     
-    const login = async (username:string, password:string) => {
+    const login = async (username:string = "", password:string = "") => {
         try{
-            
             const res = await api.post("/login", {
                 username:username,
                 password:password,
@@ -62,15 +55,13 @@ export const UserContextContainer:FC<ContextProps> = ({children}:ContextProps) =
             setUsername("")
             return err
         }
-        
-
     }
     
     const value = {
         username:username,
         isLoggedIn:isLoggedIn,
         login:login,
-        checkCredentials:checkJWT
+        checkCredentials:isValidJWT
     }
 
     return(
