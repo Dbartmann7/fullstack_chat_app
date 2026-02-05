@@ -62,12 +62,10 @@ export const ChatPage = () => {
 
   useEffect(() => {
 
-    const checkLoggedIn = async () => {
-      console.log("ghagkasjg")
-      const stillLoggedIn = await checkCredentials()
-      console.log(stillLoggedIn)
-      if(!stillLoggedIn){
-        
+    const reconnect = async () => {
+      const tokenStillValid = await checkCredentials()
+  
+      if(!tokenStillValid){
         logout()
       }else{
         // try reconnecting socket
@@ -75,8 +73,7 @@ export const ChatPage = () => {
     }
     
     if(!isConnected){
-      console.log("hello")
-      checkLoggedIn()
+      reconnect()
     }
   }, [isConnected])
 
