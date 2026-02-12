@@ -63,12 +63,10 @@ export const ChatPage = () => {
   useEffect(() => {
 
     const reconnect = async () => {
-      const tokenStillValid = await checkCredentials()
+      const tokenStillValid = await checkCredentials();
   
       if(!tokenStillValid){
-        logout()
-      }else{
-        // try reconnecting socket
+        logout();
       }
     }
     

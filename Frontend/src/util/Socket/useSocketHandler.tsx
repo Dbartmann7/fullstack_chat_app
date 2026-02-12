@@ -9,6 +9,8 @@ const URL:string = 'http://localhost:3000';
 export const useSocketHandler = () => {
     const socketRef = useRef<SocketIOClient.Socket | null>(null)
     const [isConnected, setIsConnected] = useState<Boolean>(false)
+
+  
     
     const handleConnect = useCallback(() => {
         setIsConnected(true)
@@ -20,49 +22,41 @@ export const useSocketHandler = () => {
         console.log("Socket disconnected from server")
     }, [])
 
-    const handleConnectError = useCallback(() => {
-        console.log("Socket failed to connect to server")
-    },[])
-
-    const handleReconnectAttempt = useCallback(() => {
-        console.log("Socket Reconnecting...")
-        
-    },[])
-
+    const handleReconnect = useCallback(() => {
+        console.log("reconnected")
+    }, [])
     const createSocket = () => {
         if(socketRef.current){
             console.log("Socket already exists")
         }else{
             const socket = io(URL, {
-                withCredentials:true
+                withCredentials:true,
+                reconnection:true,
+                reconnectionAttempts:5,
+                reconnectionDelay:1000,
+                reconnectionDelayMax:5000
             });
-            
             
             socket.on("connect", handleConnect);
             socket.on("disconnect", handleDisconnect);
-            socket.on("connect_error", handleConnectError);
-            socket.io.on("reconnect_attempt", handleReconnectAttempt);
-
+            socket.on("reconnect", handleReconnect)
             socketRef.current = socket
         }
     }
         
     const destroySocket = () => {
         const socket = socketRef.current
-        console.log("dest")
         if(!socket) {
             console.log("No socket to destroy")
         }else{
             socket.off("connect", handleConnect);
             socket.off("disconnect", handleDisconnect);
-            socket.off("connect_error", handleConnectError);
-            socket.io.off("reconnect_attempt", handleReconnectAttempt);
+            
             socket.disconnect()
             socketRef.current = null
         }
         
     }
-    
 
     const sendMessage = (message:string): string => {
         console.log(socketRef.current)
@@ -88,7 +82,8 @@ export const useSocketHandler = () => {
             destroySocket()
         }       
     }, []) 
-    
+
+
     return {
         isConnected,
         createSocket,

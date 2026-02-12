@@ -10,35 +10,20 @@ import type { ChatData, jwtData, SocketRes } from '@custom-types/types'
 import dotenv from "dotenv"
 import {pool} from './db';
 dotenv.config()
+
 const JWT_KEY:string | undefined = process.env.JWT_KEY
 if(!JWT_KEY) {
     throw new Error("NO JWT KEY, PLEASE SET A JWT KEY")
 }
-//  ************************* Express Setup *************************  \\
-const PORT:number = 3000
-const app = express()
-app.use(cors({
-        origin:"http://localhost:5173",
-        credentials:true
-}))
-app.use(express.json())
-app.use(cookieParser())
-const server = createServer(app)
+const JWT_LIFE:number = 1 * 60 * 1000
 
 let tempChatStorage:ChatData[] = []
 
-const io = new Server(server, {
-    cors:{
-        origin:"http://localhost:5173",
-        credentials:true
-    }
-})
 
-app.get('/', (req, res) => {
-    res.send("Server for Chat App")
-})
 
-const JWT_LIFE:number = 0.05 * 60 * 1000
+//  ************************* Functions *************************  \\
+
+
 /** 
  * Verifies a given JWT token. Returns the data contained in the token if valid, returns null if not. 
  * @param {string | undefined} token - JWT token 
@@ -56,6 +41,23 @@ const verifyJWT = (token:string | undefined): jwtData | null => {
     }
 }
 
+
+//  ************************* Express *************************  \\
+const PORT:number = 3000
+const app = express()
+app.use(cors({
+        origin:"http://localhost:5173",
+        credentials:true
+}))
+app.use(express.json())
+app.use(cookieParser())
+const server = createServer(app)
+
+app.get('/', (req, res) => {
+    res.send("Server for Chat App")
+})
+
+// ************ Routes ************ //
 app.post('/login', async (req, res) => {
     // check jwt
     const tokenData = verifyJWT(req.cookies.token)
@@ -96,8 +98,14 @@ app.post('/login', async (req, res) => {
 })
 
 
+//  ************************* Socket.io  *************************  \\
 
-
+const io = new Server(server, {
+    cors:{
+        origin:"http://localhost:5173",
+        credentials:true
+    }
+})
 
 
 io.on('connection', async (socket) => {
@@ -114,6 +122,9 @@ io.on('connection', async (socket) => {
         socket.disconnect()
     }, expIn)
 
+    setTimeout(() => {
+        socket.conn.close()
+    }, 5000)
     console.log("user connected")
 
     socket.on("disconnect", (reason) => {

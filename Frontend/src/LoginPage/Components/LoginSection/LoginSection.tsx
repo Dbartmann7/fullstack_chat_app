@@ -28,7 +28,7 @@ export const LoginSection = ({}:LoginSectionProps) => {
         <section className={styles.loginSection}>
             <h1 className={styles.title}>Login</h1>
             {isError ? "Error": null}
-            <div className={styles.inputs}>
+            <div className={styles.inputsContainer}>
                 <Input 
                     value={username}
                     setValue={setUsername}
@@ -42,9 +42,14 @@ export const LoginSection = ({}:LoginSectionProps) => {
                     placeholder="Password..."
                 />
             </div>
-            <button className={styles.loginBtn} onClick={handleLogin}>
-                Login
-            </button>
+            <div className={styles.btns}>
+                <button className={styles.btn} onClick={handleLogin}>
+                    Login
+                </button>
+                <button className={styles.btn} onClick={handleLogin}>
+                    Sign Up
+                </button>
+            </div>
         </section>
     )
 }

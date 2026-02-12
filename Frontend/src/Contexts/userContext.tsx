@@ -58,6 +58,27 @@ export const UserContextContainer:FC<ContextProps> = ({children}:ContextProps) =
             return err
         }
     }
+
+    const signUp = async (username:string, password:string) => {
+        try{
+            const res = await api.post("/signup", {
+                username:username,
+                password:password,
+            
+            }, {withCredentials:true})
+            if(res.status === 200){
+                setIsLoggedIn(true)
+                setUsername(username)
+            }
+            return res
+        }catch(err){
+            console.log(err)
+            setIsLoggedIn(false)
+            setUsername("")
+            return err
+        }
+    
+    }
     
     const logout = () => {
         setIsLoggedIn(false)
