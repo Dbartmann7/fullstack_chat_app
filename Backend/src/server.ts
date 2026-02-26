@@ -1,4 +1,5 @@
 import express from 'express'
+import bcrypt from "bcrypt"
 import { createServer} from 'node:http'
 import cors from "cors"
 import * as cookie from "cookie"
@@ -42,6 +43,7 @@ const verifyJWT = (token:string | undefined): jwtData | null => {
 }
 
 
+
 //  ************************* Express *************************  \\
 const PORT:number = 3000
 const app = express()
@@ -79,7 +81,9 @@ app.post('/login', async (req, res) => {
         res.status(401).send("Invalid username or password")
         return
     } else {
-        if(password !== userData.password){
+        const isPassMatch = await bcrypt.compare(password, userData.password)
+        
+        if(!isPassMatch){
             res.status(401).send("Invalid username or password")
             return
         }else{
@@ -97,6 +101,29 @@ app.post('/login', async (req, res) => {
     }
 })
 
+app.post("/signup", async (req, res) => {
+    const {username, password} = req.body
+
+    if(!username || !password) res.status(401).send("Invalid username or password");
+    console.log("sggan")
+    const existingUser = await pool.query('SELECT * FROM users WHERE username=$1', [username])
+    console.log("iosajgfsao")
+    if(existingUser.rowCount === 1){
+        res.status(400).send("User with username already exists")
+        return
+    }
+    try{
+        const hashedPass = await bcrypt.hash(password, 10)
+        const dbRes = await pool.query('INSERT INTO users (username, password) VALUES ($1, $2)', 
+            [username, hashedPass]
+        )
+        res.status(200).send("Account created successfully")
+    }catch(err){
+        res.status(400).send(`Error: ${err}`)
+        console.log(err)
+    }
+    
+})
 
 //  ************************* Socket.io  *************************  \\
 
@@ -122,9 +149,6 @@ io.on('connection', async (socket) => {
         socket.disconnect()
     }, expIn)
 
-    setTimeout(() => {
-        socket.conn.close()
-    }, 5000)
     console.log("user connected")
 
     socket.on("disconnect", (reason) => {

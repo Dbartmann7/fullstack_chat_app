@@ -1,12 +1,15 @@
 import api from "@/util/api";
 
-import { createContext, useEffect, useState, type FC, type ReactNode } from "react";
+import { createContext, useState, type FC, type ReactNode } from "react";
 
 type UserContextValue = {
     username:string,
     isLoggedIn:Boolean
+    isValidUsername:any
+    isValidPassword:any
     login: any
     logout:any
+    signUp:any
     checkCredentials:any
 }
 
@@ -14,8 +17,11 @@ type UserContextValue = {
 export const UserContext = createContext<UserContextValue>({
     username:"",
     isLoggedIn:false,
+    isValidUsername:"",
+    isValidPassword:"",
     login: "",
     logout:"",
+    signUp: "",
     checkCredentials:""
 })
 
@@ -38,7 +44,17 @@ export const UserContextContainer:FC<ContextProps> = ({children}:ContextProps) =
             return false
         }
     }
-    
+
+    const isValidUsername = async (username:string) => {
+        const userRegex = /^[a-zA-Z0-9]{3,18}$/
+        return username.match(userRegex) ? true : false;
+    }
+
+    const isValidPassword = (pass:string) => {
+        const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{3,}$/
+        return pass.match(passRegex) ? true : false;
+    }
+
     const login = async (username:string = "", password:string = "") => {
         try{
             const res = await api.post("/login", {
@@ -61,21 +77,20 @@ export const UserContextContainer:FC<ContextProps> = ({children}:ContextProps) =
 
     const signUp = async (username:string, password:string) => {
         try{
+            if(!isValidUsername(username) || !isValidPassword(password)){
+                console.log("invalid user or pass")
+                return
+            }
+    
             const res = await api.post("/signup", {
                 username:username,
                 password:password,
             
             }, {withCredentials:true})
-            if(res.status === 200){
-                setIsLoggedIn(true)
-                setUsername(username)
-            }
             return res
+    
         }catch(err){
             console.log(err)
-            setIsLoggedIn(false)
-            setUsername("")
-            return err
         }
     
     }
@@ -89,8 +104,11 @@ export const UserContextContainer:FC<ContextProps> = ({children}:ContextProps) =
     const value = {
         username:username,
         isLoggedIn:isLoggedIn,
+        isValidUsername:isValidUsername,
+        isValidPassword:isValidPassword,
         login:login,
         logout:logout,
+        signUp:signUp,
         checkCredentials:isValidJWT
     }
 
