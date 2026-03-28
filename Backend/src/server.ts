@@ -67,7 +67,6 @@ app.post('/login', async (req, res) => {
         res.status(200).send({message:"Login Successful", userData:tokenData})
         return
     }
-
     // check login info
     const {username, password} = req.body
     if(!username || !password) {

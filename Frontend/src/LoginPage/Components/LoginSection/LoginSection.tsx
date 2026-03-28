@@ -2,10 +2,46 @@ import { UserContext } from "@/Contexts/userContext"
 import { use, useState } from "react"
 import styles from "./LoginSection.module.css"
 import { Input } from "../Input"
-
+import { TestAccountBtn } from "./Components/TestAccountBtn"
+import type { TestAccount } from "@/util/types"
+import tonyPic from "@/assets/TestProfPics/Tony.jpg"
+import christopherPic from "@/assets/TestProfPics/Christopher.jpg"
 type LoginSectionProps = {
 
 }
+
+const testAccounts:TestAccount[] = [
+    {
+        username: "Tony S",
+        password: "Test1",
+        imgSrc:tonyPic
+    },
+    {
+        username:"Christopher",
+        password:"Test1",
+        imgSrc:christopherPic
+    },
+    {
+        username: "Tony S",
+        password: "Test1",
+        imgSrc:tonyPic
+    },
+    {
+        username:"Christopher",
+        password:"Test1",
+        imgSrc:christopherPic
+    },
+    {
+        username: "Tony S",
+        password: "Test1",
+        imgSrc:tonyPic
+    },
+    {
+        username:"Christopher",
+        password:"Test1",
+        imgSrc:christopherPic
+    }
+]
 
 export const LoginSection = ({}:LoginSectionProps) => {
     
@@ -31,7 +67,7 @@ export const LoginSection = ({}:LoginSectionProps) => {
             console.log("invalid username or password")
         }else{
             try{
-                
+
                 await signUp(username, password);
                 await login(username, password)
                 
@@ -43,30 +79,42 @@ export const LoginSection = ({}:LoginSectionProps) => {
 
     return(
         <section className={styles.loginSection}>
-            <h1 className={styles.title}>Login</h1>
-            {isError ? "Error": null}
-            <div className={styles.inputsContainer}>
-                <Input 
-                    value={username}
-                    setValue={setUsername}
-                    maxLength={20}
-                    placeholder="Username..."
-                />
-                <Input
-                    type="password"
-                    value={password}
-                    setValue={setPassword}
-                    maxLength={32}
-                    placeholder="Password..."
-                />
+            <div className={styles.topHalf}>
+                <h1 className={styles.title}>Login</h1>
+                {isError ? "Error": null}
+            
+                <div className={styles.inputsContainer}>
+                    <Input 
+                        value={username}
+                        setValue={setUsername}
+                        maxLength={20}
+                        placeholder="Username..."
+                    />
+                    <Input
+                        type="password"
+                        value={password}
+                        setValue={setPassword}
+                        maxLength={32}
+                        placeholder="Password..."
+                    />
+                </div>
+                <div className={styles.btns}>
+                    <button className={styles.btn} onClick={handleLogin}>
+                        Login
+                    </button>
+                    <button className={styles.btn} onClick={handleSignUp}>
+                        Sign Up
+                    </button>
+                </div>
             </div>
-            <div className={styles.btns}>
-                <button className={styles.btn} onClick={handleLogin}>
-                    Login
-                </button>
-                <button className={styles.btn} onClick={handleSignUp}>
-                    Sign Up
-                </button>
+            
+            
+            <div className={styles.testAccounts}>
+                {
+                    testAccounts.map(acc => {
+                        return <TestAccountBtn testAccount={acc}/>
+                    })
+                }
             </div>
         </section>
     )
