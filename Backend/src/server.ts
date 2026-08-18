@@ -16,7 +16,7 @@ const JWT_KEY:string | undefined = process.env.JWT_KEY
 if(!JWT_KEY) {
     throw new Error("NO JWT KEY, PLEASE SET A JWT KEY")
 }
-const JWT_LIFE:number = 1 * 60 * 1000
+const JWT_LIFE:number = 60 * 60 * 1000
 
 let tempChatStorage:ChatData[] = []
 
@@ -61,12 +61,13 @@ app.get('/', (req, res) => {
 
 // ************ Routes ************ //
 app.post('/login', async (req, res) => {
-    // check jwt
+    // if valid jwt exists, login straight away
     const tokenData = verifyJWT(req.cookies.token)
     if(tokenData){
         res.status(200).send({message:"Login Successful", userData:tokenData})
         return
     }
+
     // check login info
     const {username, password} = req.body
     if(!username || !password) {
@@ -74,43 +75,46 @@ app.post('/login', async (req, res) => {
         return
     }
     
-
-    const userData =  (await pool.query(`SELECT * FROM users WHERE username=\'${username}\'`)).rows[0]
+    // fetch user data from db and match username and password
+    const userData = (await pool.query('SELECT * FROM users WHERE username=$1', [username])).rows[0]
     if(!userData){
         res.status(401).send("Invalid username or password")
         return
-    } else {
-        const isPassMatch = await bcrypt.compare(password, userData.password)
-        
-        if(!isPassMatch){
-            res.status(401).send("Invalid username or password")
-            return
-        }else{
-            let payload:jwtData = {username:username}
-            let token = jwt.sign(payload, JWT_KEY, {expiresIn:`${JWT_LIFE}ms`})
-            res.cookie("token", token, {
-                httpOnly:true,
-                secure: false,
-                sameSite:"lax",
-                maxAge: JWT_LIFE
-
-            })
-            .status(200).send("login successful")
-        }
+    } 
+    const isPassMatch = await bcrypt.compare(password, userData.password)
+    if(!isPassMatch){
+        res.status(401).send("Invalid username or password")
+        return
     }
+
+    // create jwt and login
+    let payload:jwtData = {username:username}
+    let token = jwt.sign(payload, JWT_KEY, {expiresIn:`${JWT_LIFE}ms`})
+    res.cookie("token", token, {
+        httpOnly:true,
+        secure: false,
+        sameSite:"lax",
+        maxAge: JWT_LIFE
+    }).status(200).send("login successful")
+
 })
 
 app.post("/signup", async (req, res) => {
+    
     const {username, password} = req.body
-
-    if(!username || !password) res.status(401).send("Invalid username or password");
-    console.log("sggan")
-    const existingUser = await pool.query('SELECT * FROM users WHERE username=$1', [username])
-    console.log("iosajgfsao")
-    if(existingUser.rowCount === 1){
-        res.status(400).send("User with username already exists")
+    if(!username || !password) {
+        res.status(401).send("Invalid username or password");
         return
     }
+
+    // check if username is taken
+    // db already forbids duplicates, but this allows a relevant message to be displayed. 
+    const existingUser = await pool.query('SELECT * FROM users WHERE username=$1', [username])
+    if(existingUser.rows.length > 0){
+        res.status(400).send("User already exists")
+        return
+    }
+    
     try{
         const hashedPass = await bcrypt.hash(password, 10)
         const dbRes = await pool.query('INSERT INTO users (username, password) VALUES ($1, $2)', 
@@ -118,7 +122,7 @@ app.post("/signup", async (req, res) => {
         )
         res.status(200).send("Account created successfully")
     }catch(err){
-        res.status(400).send(`Error: ${err}`)
+        res.status(500).send(`Error creating account`)
         console.log(err)
     }
     
@@ -143,7 +147,7 @@ io.on('connection', async (socket) => {
         return
     }
     let expIn:number = data.exp! * 1000 - Date.now() || 1
-    console.log(expIn)
+
     setTimeout(() => {
         socket.disconnect()
     }, expIn)

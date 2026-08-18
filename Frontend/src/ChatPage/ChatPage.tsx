@@ -80,12 +80,17 @@ export const ChatPage = () => {
   }, [input])
 
   return(
-      <div className={styles.mobileMain}>
-        <section className={styles.chatMain}>
+      <main className={styles.mobileMain}>
+        {/* <section className={styles.chatMain}>
           <h1 className={styles.chatHeader}>Chat Name</h1>
           <ChatArea chats={chats}/>
           <InputBar value={input} setValue={setInput}/>
-        </section>
-      </div>
+        </section> */}
+
+
+        {/* <div className={styles.}>
+
+        </div> */}
+      </main>
   )
 }
