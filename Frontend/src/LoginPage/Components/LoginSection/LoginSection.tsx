@@ -46,42 +46,41 @@ const testAccounts:TestAccount[] = [
 export const LoginSection = ({}:LoginSectionProps) => {
     
     const {isValidUsername, isValidPassword, login, signUp} = use(UserContext)
-    const [isError, setIsError] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
 
 
     const handleLogin = async () => {
-
-        
         let res = await login(username, password)
         if(res.status === 401){
             setUsername("")
             setPassword("")
-            setIsError(true)
+            setError("problem with login")
         }
     }
 
     const handleSignUp = async () => {
         if(!isValidUsername(username) || !isValidPassword(password)){
-            console.log("invalid username or password")
-        }else{
-            try{
-
-                await signUp(username, password);
-                await login(username, password)
-                
-            }catch(err){
-                console.log(`Sign up error: ${err}`)
-            }
+            setError("invalid username or password")
+            return
         }
+
+        try{
+            await signUp(username, password);
+            await login(username, password)
+                
+        }catch(err){
+            setError(`Sign up error: ${err}`)
+        }
+        
     }
 
     return(
         <section className={styles.loginSection}>
             <div className={styles.topHalf}>
                 <h1 className={styles.title}>Login</h1>
-                {isError ? "Error": null}
+                {error}
             
                 <div className={styles.inputsContainer}>
                     <Input 
