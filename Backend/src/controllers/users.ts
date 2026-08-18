@@ -1,0 +1,76 @@
+import { jwtData } from "@custom-types/types"
+import {pool} from "../db"
+
+import bcrypt from "bcrypt"
+import jwt from "jsonwebtoken"
+import {Request, Response} from "express"
+import { JWT_LIFE, verifyJWT } from "../util/auth"
+
+export const login = async (req:Request, res:Response) => {
+    console.log("here")
+    // if valid jwt exists, login straight away
+    const tokenData = verifyJWT(req.cookies.token)
+    if(tokenData){
+        res.status(200).send({message:"Login Successful", userData:tokenData})
+        return
+    }
+
+    // check login info
+    const {username, password} = req.body
+    if(!username || !password) {
+        res.status(401).send("Invalid username or password")
+        return
+    }
+    
+    // fetch user data from db and match username and password
+    const userData = (await pool.query('SELECT * FROM users WHERE username=$1', [username])).rows[0]
+    if(!userData){
+        res.status(401).send("Invalid username or password")
+        return
+    } 
+    const isPassMatch = await bcrypt.compare(password, userData.password)
+    if(!isPassMatch){
+        res.status(401).send("Invalid username or password")
+        return
+    }
+
+    // create jwt and login
+    let payload:jwtData = {username:username}
+    let token = jwt.sign(payload, process.env.JWT_KEY!, {expiresIn:`${JWT_LIFE}ms`})
+    res.cookie("token", token, {
+        httpOnly:true,
+        secure: false,
+        sameSite:"lax",
+        maxAge: JWT_LIFE
+    }).status(200).send("login successful")
+
+}
+
+export const signUp = async (req:Request, res:Response) => {
+    console.log("gosdagjsaioj")
+    const {username, password} = req.body
+    if(!username || !password) {
+        res.status(401).send("Invalid username or password");
+        return
+    }
+
+    // check if username is taken
+    // db already forbids duplicates, but this allows a relevant message to be displayed. 
+    const existingUser = await pool.query('SELECT * FROM users WHERE username=$1', [username])
+    if(existingUser.rows.length > 0){
+        res.status(400).send("User already exists")
+        return
+    }
+    
+    try{
+        const hashedPass = await bcrypt.hash(password, 10)
+        const dbRes = await pool.query('INSERT INTO users (username, password) VALUES ($1, $2)', 
+            [username, hashedPass]
+        )
+        res.status(200).send("Account created successfully")
+    }catch(err){
+        res.status(500).send(`Error creating account`)
+        console.log(err)
+    }
+    
+}

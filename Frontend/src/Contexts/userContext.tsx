@@ -35,7 +35,7 @@ export const UserContextContainer:FC<ContextProps> = ({children}:ContextProps) =
     
     const isValidJWT = async () => {
         try{
-            const res = await api.post("/login",{} , {withCredentials:true})
+            const res = await api.post("/api/auth/login",{} , {withCredentials:true})
             if(res.status === 200){
                 return true
             }
@@ -57,7 +57,7 @@ export const UserContextContainer:FC<ContextProps> = ({children}:ContextProps) =
 
     const login = async (username:string = "", password:string = "") => {
         try{
-            const res = await api.post("/login", {
+            const res = await api.post("/api/auth/login", {
                 username:username,
                 password:password,
             
@@ -76,17 +76,17 @@ export const UserContextContainer:FC<ContextProps> = ({children}:ContextProps) =
     }
 
     const signUp = async (username:string, password:string) => {
+        if(!isValidUsername(username) || !isValidPassword(password)){
+            console.log("invalid user or pass")
+            return
+        }
+        
         try{
-            if(!isValidUsername(username) || !isValidPassword(password)){
-                console.log("invalid user or pass")
-                return
-            }
-    
-            const res = await api.post("/signup", {
+            const res = await api.post("/api/auth/signup", {
                 username:username,
                 password:password,
             
-            }, {withCredentials:true})
+            })
             return res
     
         }catch(err){
