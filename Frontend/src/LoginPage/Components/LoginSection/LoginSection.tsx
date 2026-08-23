@@ -45,35 +45,34 @@ const testAccounts:TestAccount[] = [
 
 export const LoginSection = ({}:LoginSectionProps) => {
     
-    const {isValidUsername, isValidPassword, login, signUp} = use(UserContext)
+    const {login, signUp} = use(UserContext)
     const [error, setError] = useState<string | null>(null);
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
 
 
     const handleLogin = async () => {
-        let res = await login(username, password)
-        if(res.status === 401){
+     
+        const res = await login(username, password)
+        if(!res.ok){
+            setError(res.error)
             setUsername("")
             setPassword("")
-            setError("problem with login")
-        }
+        } 
     }
 
     const handleSignUp = async () => {
-        if(!isValidUsername(username) || !isValidPassword(password)){
-            setError("invalid username or password")
+        let signUpRes = await signUp(username, password);
+        console.log(signUpRes)
+        if(!signUpRes.ok){
+            setError(signUpRes.error)
             return
         }
-
-        try{
-            await signUp(username, password);
-            await login(username, password)
-                
-        }catch(err){
-            setError(`Sign up error: ${err}`)
-        }
-        
+        let loginRes = await login(username, password)
+        if(!loginRes.ok){
+            setError(loginRes.message)
+            return
+        }        
     }
 
     return(

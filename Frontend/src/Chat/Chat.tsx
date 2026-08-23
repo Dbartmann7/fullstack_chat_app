@@ -1,5 +1,5 @@
 import styles from "./Chat.module.css"
-import type { ChatData } from "../../../custom-types/types"
+import type { ChatData } from "../../../shared/types"
 import { use, useEffect, useState } from "react"
 import { UserContext } from "../Contexts/userContext"
 

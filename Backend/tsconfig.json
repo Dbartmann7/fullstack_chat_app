@@ -3,7 +3,7 @@
   "compilerOptions": {
     // File Layout
     "outDir": "./build",
-
+    "rootDir": "..",
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
     "module": "nodenext",
@@ -43,8 +43,8 @@
     "moduleDetection": "force",
     "skipLibCheck": true,
     "paths":{
-      "@custom-types/*": ["../custom-types/*"]
+      "@shared/*": ["../shared/*"]
     }
   },
-  "include": ["src", "../custom-types"]
+  "include": ["src", "../shared"]
 }

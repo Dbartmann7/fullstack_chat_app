@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import styles from "./ChatArea.module.css"
-import type { ChatData } from "../../../../custom-types/types";
+import type { ChatData } from "../../../../shared/types";
 import Chat from "../../Chat";
 
 type ChatAreaProps = {

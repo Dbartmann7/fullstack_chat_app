@@ -1,4 +1,6 @@
 import api from "@/util/api";
+import { isAxiosError }  from "axios";
+
 
 import { createContext, useState, type FC, type ReactNode } from "react";
 
@@ -45,13 +47,13 @@ export const UserContextContainer:FC<ContextProps> = ({children}:ContextProps) =
         }
     }
 
-    const isValidUsername = async (username:string) => {
+    const isValidUsername = (username:string) => {
         const userRegex = /^[a-zA-Z0-9]{3,18}$/
         return username.match(userRegex) ? true : false;
     }
 
     const isValidPassword = (pass:string) => {
-        const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{3,}$/
+        const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)\S{8,}$/
         return pass.match(passRegex) ? true : false;
     }
 
@@ -62,23 +64,41 @@ export const UserContextContainer:FC<ContextProps> = ({children}:ContextProps) =
                 password:password,
             
             }, {withCredentials:true})
+            console.log(res)
             if(res.status === 200){
                 setIsLoggedIn(true)
                 setUsername(username)
             }
-            return res
+            return {
+                ok:true,
+                message:res.data.message
+            }
         }catch(err){
-            console.log(err)
             setIsLoggedIn(false)
             setUsername("")
-            return err
+            let message = ""
+
+            isAxiosError(err) ? message = err.response?.data.message : "Something unexpected went wrong"
+            return{
+                ok:false,
+                error:message
+            }
         }
     }
 
     const signUp = async (username:string, password:string) => {
-        if(!isValidUsername(username) || !isValidPassword(password)){
-            console.log("invalid user or pass")
-            return
+        console.log(username)
+        if(!isValidUsername(username)){
+            return {
+                ok:false,
+                error:"Username must be 3-18 characters long and must not contain special characters"
+            }
+        }
+        if(!isValidPassword(password)){
+            return{
+                ok:false,
+                error:"Password must be at least 3 chars long and have at least 1 uppercase letter, 1 lowercase letter, and 1 number"
+            }
         }
         
         try{
@@ -90,7 +110,12 @@ export const UserContextContainer:FC<ContextProps> = ({children}:ContextProps) =
             return res
     
         }catch(err){
-            console.log(err)
+            let message = ""
+            isAxiosError(err) ? message = err.response?.data.message : "Something unexpected went wrong"
+            return{
+                ok:false,
+                error:message
+            }
         }
     
     }

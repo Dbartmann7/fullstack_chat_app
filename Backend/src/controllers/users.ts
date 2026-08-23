@@ -1,4 +1,4 @@
-import { jwtData } from "@custom-types/types"
+import { jwtData } from "@shared/types"
 import {pool} from "../db"
 
 import bcrypt from "bcrypt"
@@ -7,7 +7,7 @@ import {Request, Response} from "express"
 import { JWT_LIFE, verifyJWT } from "../util/auth"
 
 export const login = async (req:Request, res:Response) => {
-    console.log("here")
+
     // if valid jwt exists, login straight away
     const tokenData = verifyJWT(req.cookies.token)
     if(tokenData){
@@ -18,19 +18,19 @@ export const login = async (req:Request, res:Response) => {
     // check login info
     const {username, password} = req.body
     if(!username || !password) {
-        res.status(401).send("Invalid username or password")
+        res.status(401).send({message:"Empty username or password"})
         return
     }
-    
+
     // fetch user data from db and match username and password
     const userData = (await pool.query('SELECT * FROM users WHERE username=$1', [username])).rows[0]
     if(!userData){
-        res.status(401).send("Invalid username or password")
+        res.status(401).send({message:"Invalid username or password"})
         return
     } 
     const isPassMatch = await bcrypt.compare(password, userData.password)
     if(!isPassMatch){
-        res.status(401).send("Invalid username or password")
+        res.status(401).send({message:"Invalid username or password"})
         return
     }
 
@@ -42,15 +42,15 @@ export const login = async (req:Request, res:Response) => {
         secure: false,
         sameSite:"lax",
         maxAge: JWT_LIFE
-    }).status(200).send("login successful")
+    }).status(200).send({message:"login successful"})
 
 }
 
 export const signUp = async (req:Request, res:Response) => {
-    console.log("gosdagjsaioj")
+  
     const {username, password} = req.body
     if(!username || !password) {
-        res.status(401).send("Invalid username or password");
+        res.status(401).send({message:"Empty username or password"});
         return
     }
 
@@ -58,7 +58,7 @@ export const signUp = async (req:Request, res:Response) => {
     // db already forbids duplicates, but this allows a relevant message to be displayed. 
     const existingUser = await pool.query('SELECT * FROM users WHERE username=$1', [username])
     if(existingUser.rows.length > 0){
-        res.status(400).send("User already exists")
+        res.status(400).send({message:"User already exists"})
         return
     }
     
@@ -67,9 +67,9 @@ export const signUp = async (req:Request, res:Response) => {
         const dbRes = await pool.query('INSERT INTO users (username, password) VALUES ($1, $2)', 
             [username, hashedPass]
         )
-        res.status(200).send("Account created successfully")
+        res.status(200).send({message:"Account created successfully"})
     }catch(err){
-        res.status(500).send(`Error creating account`)
+        res.status(500).send({message:"Error creating account"})
         console.log(err)
     }
     

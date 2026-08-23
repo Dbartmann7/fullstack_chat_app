@@ -1,5 +1,4 @@
 import express from 'express'
-import bcrypt from "bcrypt"
 import { createServer} from 'node:http'
 import cors from "cors"
 import * as cookie from "cookie"
@@ -7,10 +6,9 @@ import cookieParser from "cookie-parser"
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import { Server } from 'socket.io'
 import { StatusCodes } from "http-status-codes";
-import type { ChatData, jwtData, SocketRes } from '@custom-types/types'
+import type { ChatData, jwtData, SocketRes } from '@shared/types'
 import dotenv from "dotenv"
 import "dotenv/config";
-import {pool} from './db';
 import authRouter from './routes/authRoutes'
 dotenv.config()
 
