@@ -80,7 +80,7 @@ export const signUp = async (req:Request, res:Response) => {
         const dbRes = await pool.query('INSERT INTO users (username, password) VALUES ($1, $2)', 
             [username, hashedPass]
         )
-        res.status(200).send({message:"Account created successfully"})
+        res.status(200).send({message:"Account created successfully", ok:true})
     }catch(err){
         res.status(500).send({message:"Error creating account"})
         console.log(err)

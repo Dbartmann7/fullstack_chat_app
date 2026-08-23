@@ -104,10 +104,11 @@ export const UserContextContainer:FC<ContextProps> = ({children}:ContextProps) =
                 error:"Username must be 3-18 characters long and must not contain special characters"
             }
         }
+        console.log(password)
         if(!isValidPassword(password)){
             return{
                 ok:false,
-                error:"Password must be at least 3 chars long and have at least 1 uppercase letter, 1 lowercase letter, and 1 number"
+                error:"Password must be at least 8 chars long and have at least 1 uppercase letter, 1 lowercase letter, and 1 number"
             }
         }
         
@@ -117,7 +118,10 @@ export const UserContextContainer:FC<ContextProps> = ({children}:ContextProps) =
                 password:password,
             
             })
-            return res
+            return {
+                ok:true,
+                message:res.data.message
+            }
     
         }catch(err){
             let message = ""
