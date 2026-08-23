@@ -35,12 +35,13 @@ export const UserContextContainer:FC<ContextProps> = ({children}:ContextProps) =
     const [username, setUsername] = useState<string>("")
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
     
-    const isValidJWT = async () => {
+    const checkCredentials = async () => {
         try{
-            const res = await api.post("/api/auth/login",{} , {withCredentials:true})
+            const res = await api.post("/api/auth/me",{} , {withCredentials:true})
             if(res.status === 200){
                 return true
             }
+            return false
         }catch(err){
             console.log("Login error: " , err)
             return false
@@ -58,6 +59,15 @@ export const UserContextContainer:FC<ContextProps> = ({children}:ContextProps) =
     }
 
     const login = async (username:string = "", password:string = "") => {
+        if(await checkCredentials()){
+            setIsLoggedIn(true)
+            setUsername(username)
+            return {
+                ok:true,
+                message:"Login successful"
+            }
+        }
+        
         try{
             const res = await api.post("/api/auth/login", {
                 username:username,
@@ -134,7 +144,7 @@ export const UserContextContainer:FC<ContextProps> = ({children}:ContextProps) =
         login:login,
         logout:logout,
         signUp:signUp,
-        checkCredentials:isValidJWT
+        checkCredentials:checkCredentials
     }
 
     return(

@@ -6,6 +6,12 @@
 body{
     margin:0;
     font-family: "Bitcount Single";
+    background: #243647;
+  
+  background: 
+    /* radial-gradient(circle at -10% 50%, rgba(0,153,255,0.12), transparent 40%) left,
+    radial-gradient(circle at  110% 50%, rgba(0,153,255,0.12), transparent 40%) right, */
+    radial-gradient(circle, rgba(21 ,32 ,43, 1) 40%, rgba(0, 0, 0, 1) 100%);
 }
 input,
 button

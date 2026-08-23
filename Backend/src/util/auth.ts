@@ -1,4 +1,4 @@
-import { jwtData } from "@custom-types/types"
+import { jwtData } from "@shared/types"
 
 import jwt from "jsonwebtoken"
 

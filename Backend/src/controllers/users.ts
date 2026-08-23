@@ -4,16 +4,29 @@ import {pool} from "../db"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import {Request, Response} from "express"
-import { JWT_LIFE, verifyJWT } from "../util/auth"
+import { JWT_LIFE } from "../util/auth"
+
+export const verifyJWT = async (req:Request, res:Response) => {
+    // if valid jwt exists, login straight away
+    const token = req.cookies.token
+    console.log(token)
+    if(!token){
+        res.status(401).send({message:"Invalid credentials"})    
+        return
+    }
+    try{
+        const tokenData = jwt.verify(token, process.env.JWT_KEY!) as jwtData
+        res.status(200).send({message:"Valid credentials", userData:tokenData})
+        return
+    }catch(err){
+        res.status(401).send({message:"Invalid Credentials"})
+        return 
+    }
+}
 
 export const login = async (req:Request, res:Response) => {
 
-    // if valid jwt exists, login straight away
-    const tokenData = verifyJWT(req.cookies.token)
-    if(tokenData){
-        res.status(200).send({message:"Login Successful", userData:tokenData})
-        return
-    }
+    
 
     // check login info
     const {username, password} = req.body
