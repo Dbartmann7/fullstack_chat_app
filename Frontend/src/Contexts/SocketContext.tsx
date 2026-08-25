@@ -1,16 +1,41 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import io from "socket.io-client";
+
+
+import type { SocketRes } from "@shared/types";
 import { StatusCodes } from "http-status-codes";
-import type { SocketRes } from "@custom-types/types";
-import type { Socket } from "socket.io-client";
-// update url for production build with env
-const URL:string = 'http://localhost:3000';
+import { createContext, useCallback, useEffect, useRef, useState, type FC, type ReactNode } from "react";
+import { io, type Socket } from "socket.io-client";
 
-export const useSocketHandler = () => {
-    const socketRef = useRef<SocketIOClient.Socket | null>(null)
-    const [isConnected, setIsConnected] = useState<Boolean>(false)
+type SocketContextValue = {
+    isConnected:boolean,
+    createSocket:() => void,
+    destroySocket:() => void,
+    sendMessage: (message:string) => void
+}
 
-  
+
+export const SocketContext = createContext<SocketContextValue>({
+    isConnected: false,
+    createSocket: (): void => {
+        throw new Error("Function not implemented.");
+    },
+    destroySocket: (): void => {
+        throw new Error("Function not implemented.");
+    },
+    sendMessage:(message: string): void => {
+        throw new Error("Function not implemented.");
+    }
+})
+
+type ContextProps = {
+    children:ReactNode
+}
+
+export const SocketContextContainer:FC<ContextProps> = ({children}:ContextProps) => {
+    const socketRef = useRef<Socket | null>(null)
+    const [isConnected, setIsConnected] = useState<boolean>(false)
+
+    // update url for production build with env
+    const URL:string = 'http://localhost:3000';
     
     const handleConnect = useCallback(() => {
         setIsConnected(true)
@@ -39,7 +64,7 @@ export const useSocketHandler = () => {
             
             socket.on("connect", handleConnect);
             socket.on("disconnect", handleDisconnect);
-            socket.on("reconnect", handleReconnect)
+            socket.io.on("reconnect", handleReconnect)
             socketRef.current = socket
         }
     }
@@ -51,14 +76,14 @@ export const useSocketHandler = () => {
         }else{
             socket.off("connect", handleConnect);
             socket.off("disconnect", handleDisconnect);
-            
+            socket.io.off("reconnect", handleReconnect)
             socket.disconnect()
             socketRef.current = null
         }
         
     }
 
-    const sendMessage = (message:string): string => {
+    const sendMessage = (message:string): void => {
         console.log(socketRef.current)
         if(!socketRef.current){
             throw Error("Socket does not exist")
@@ -73,7 +98,6 @@ export const useSocketHandler = () => {
             }
         })
        
-        return ""
     }
     
     
@@ -84,10 +108,19 @@ export const useSocketHandler = () => {
     }, []) 
 
 
-    return {
-        isConnected,
-        createSocket,
-        destroySocket,
-        sendMessage
+
+    const value = {
+        
+        isConnected:isConnected,
+        createSocket:createSocket,
+        destroySocket:destroySocket,
+        sendMessage:sendMessage
+        
     }
+
+    return(
+        <SocketContext.Provider value={value}>
+            {children}
+        </SocketContext.Provider>
+    )
 }

@@ -1,20 +1,19 @@
-import { useEffect, useRef, useState, type RefObject } from "react"
+import { use, useRef, useState, type RefObject } from "react"
 import styles from "./ChatInputBar.module.css"
 import { Send } from "lucide-react"
+import { SocketContext } from "@/Contexts/SocketContext"
 
 type InputBarProps = {
-    value:string,
-    setValue:any,
     maxLength?:number
     isPassword?:boolean,
     onKeyDown?:any
     multiline?:boolean
 }
 
-export const InputBar = ({ value, setValue, maxLength = 200000}:InputBarProps) => {
-    let [textContent, setTextContent] = useState<string>("");
+export const InputBar = ({maxLength = 200000}:InputBarProps) => {
+    let [value, setValue] = useState<string>("");
     let inputDivRef:RefObject<HTMLDivElement | null> = useRef(null)
-
+    let {sendMessage} = use(SocketContext)
    
     const moveCaretToEnd = (el:HTMLElement) => {
         el.focus();
@@ -38,6 +37,10 @@ export const InputBar = ({ value, setValue, maxLength = 200000}:InputBarProps) =
 
     }
 
+    const handleSend = () => {
+        sendMessage(value)
+    }
+
     return (
         <div className={styles.container}>
            
@@ -49,7 +52,7 @@ export const InputBar = ({ value, setValue, maxLength = 200000}:InputBarProps) =
                 ref={inputDivRef}
             >
             </div>
-            <button className={`${styles.sendBtn}`}>
+            <button className={`${styles.sendBtn}`} onClick={handleSend}>
                 <Send className={`${styles.sendIcon}`} />
             </button>
         </div>

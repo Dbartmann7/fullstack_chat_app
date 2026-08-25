@@ -3,12 +3,12 @@ import styles from "./ChatPage.module.css"
 import { UserContext } from "../Contexts/userContext"
 import type { ChatData } from "@shared/types"
 import { ChatArea } from "./Components/ChatArea"
-import { useSocketHandler } from "@/util/Socket/useSocketHandler"
+import { SocketContext } from "@/Contexts/SocketContext"
 import { InputBar } from "./Components/ChatInputBar"
 
 export const ChatPage = () => {
     const {username, checkCredentials, logout} = use(UserContext);
-    const {isConnected, createSocket, destroySocket, sendMessage} = useSocketHandler();
+    const {isConnected, createSocket, destroySocket} = use(SocketContext);
     const [othername, setOtherName] = useState<string>("other");
 
     const [chats, setChats] = useState<ChatData[]>([
@@ -49,7 +49,7 @@ export const ChatPage = () => {
     },
   ])
 
-  const [input, setInput] = useState<string>("");
+  
 
   useEffect(() => {
     createSocket()
@@ -75,16 +75,14 @@ export const ChatPage = () => {
     }
   }, [isConnected])
 
-  useEffect(() => {
-    console.log(input)
-  }, [input])
+
 
   return(
       <main className={styles.mobileMain}>
         <section className={styles.chatMain}>
           <h1 className={styles.chatHeader}>Chat Name</h1>
           <ChatArea chats={chats}/>
-          <InputBar value={input} setValue={setInput}/>
+          <InputBar/>
         </section>
 
 

@@ -4,6 +4,7 @@ import './App.css'
 import {UserContext} from './Contexts/userContext'
 import { ChatPage } from './ChatPage'
 import { LoginPage } from './LoginPage'
+import { SocketContext, SocketContextContainer } from './Contexts/SocketContext'
 
 
 function App() {
@@ -26,9 +27,13 @@ function App() {
   return (
 
       <div className='app'>
-        {isLoggedIn ? <ChatPage/> : <LoginPage/>}
-        {/* <ChatPage/> */}
-        {/* <LoginPage/> */}
+        {isLoggedIn ? 
+            <SocketContextContainer>
+              <ChatPage/> 
+            </SocketContextContainer>
+          : 
+            <LoginPage/>
+        }
       </div>
 
   )
