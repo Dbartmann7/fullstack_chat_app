@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type RefObject } from "react"
 import styles from "./ChatInputBar.module.css"
+import { Send } from "lucide-react"
 
 type InputBarProps = {
     value:string,
@@ -10,7 +11,7 @@ type InputBarProps = {
     multiline?:boolean
 }
 
-export const InputBar = ({ value, setValue, maxLength = 10}:InputBarProps) => {
+export const InputBar = ({ value, setValue, maxLength = 200000}:InputBarProps) => {
     let [textContent, setTextContent] = useState<string>("");
     let inputDivRef:RefObject<HTMLDivElement | null> = useRef(null)
 
@@ -48,7 +49,9 @@ export const InputBar = ({ value, setValue, maxLength = 10}:InputBarProps) => {
                 ref={inputDivRef}
             >
             </div>
-            
+            <button className={`${styles.sendBtn}`}>
+                <Send className={`${styles.sendIcon}`} />
+            </button>
         </div>
     )
 }

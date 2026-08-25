@@ -1,7 +1,7 @@
 import { use, useEffect, useState } from "react"
 import styles from "./ChatPage.module.css"
 import { UserContext } from "../Contexts/userContext"
-import type { ChatData } from "@custom-types/types"
+import type { ChatData } from "@shared/types"
 import { ChatArea } from "./Components/ChatArea"
 import { useSocketHandler } from "@/util/Socket/useSocketHandler"
 import { InputBar } from "./Components/ChatInputBar"
@@ -81,11 +81,11 @@ export const ChatPage = () => {
 
   return(
       <main className={styles.mobileMain}>
-        {/* <section className={styles.chatMain}>
+        <section className={styles.chatMain}>
           <h1 className={styles.chatHeader}>Chat Name</h1>
           <ChatArea chats={chats}/>
           <InputBar value={input} setValue={setInput}/>
-        </section> */}
+        </section>
 
 
         {/* <div className={styles.}>

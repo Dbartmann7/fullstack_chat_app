@@ -1,29 +1,43 @@
 .container{
     box-sizing: border-box;
+    display: flex;
+    gap:2px;
     width:100%;
     min-height:fit-content;
     background-color: transparent;
     color:white;
     border: 1px solid #ccc;
     border-radius: 15px;
-    padding:10px 20px;
+    padding: 20px;
 }
 
 .input{
+    align-self: center;
     line-height: 1.2em; 
     line-break: strict;
     min-height: 1em;
     max-height: 10em;
+    padding: 0 20px;
     padding-bottom: 0.2em; /* add line height to bottom to make spaces between text and container box equal on top and bottom */
-    
+    width:100%;
     border:none;
+    font-size: 1.25em;
     overflow-y: scroll;
-    
     &:focus{
         outline: none;
     }
 }
 
-.passwordInput{
+.sendBtn{
+    min-width:50px;
+    height:50px;
+    margin-top:auto;
+    background:transparent;
+    border:none;
+}
+
+.sendIcon{
+    color:white;
     width:100%;
+    height:100%;
 }
