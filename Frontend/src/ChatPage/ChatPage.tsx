@@ -8,7 +8,7 @@ import { InputBar } from "./Components/ChatInputBar"
 
 export const ChatPage = () => {
     const {username, checkCredentials, logout} = use(UserContext);
-    const {isConnected, createSocket, destroySocket} = use(SocketContext);
+    const {isConnected, createSocket, destroySocket, messages} = use(SocketContext);
     const [othername, setOtherName] = useState<string>("other");
 
     const [chats, setChats] = useState<ChatData[]>([
@@ -75,20 +75,15 @@ export const ChatPage = () => {
     }
   }, [isConnected])
 
-
+  if(!messages) return <h1>Loading...</h1>
 
   return(
       <main className={styles.mobileMain}>
         <section className={styles.chatMain}>
           <h1 className={styles.chatHeader}>Chat Name</h1>
-          <ChatArea chats={chats}/>
+          <ChatArea chats={messages}/>
           <InputBar/>
         </section>
-
-
-        {/* <div className={styles.}>
-
-        </div> */}
       </main>
   )
 }

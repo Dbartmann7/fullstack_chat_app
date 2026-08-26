@@ -8,20 +8,20 @@ import { SocketContext, SocketContextContainer } from './Contexts/SocketContext'
 
 
 function App() {
-  const {isLoggedIn, login} = use(UserContext)
-  const [authLoading, setAuthLoading] = useState<boolean>(true)
+  const {isLoggedIn, checkCredentials, authLoading} = use(UserContext)
 
-  useEffect(() => {
-    const attemptJWTLogin = async () => {
-      await login()
-      setAuthLoading(false)
-    }
+
+  // useEffect(() => {
+  //   const attemptJWTLogin = async () => {
+  //     await checkCredentials()
+  //     setAuthLoading(false)
+  //   }
     
-    attemptJWTLogin()
-  }, [])
+  //   attemptJWTLogin()
+  // }, [])
 
   if(authLoading){
-    return <h1>Loading...</h1>
+    return <h1></h1>
   }
 
   return (

@@ -12,7 +12,7 @@ export const ChatArea:FC<ChatAreaProps> = ({chats}:ChatAreaProps) => {
         <div className={styles.chatArea}>
             <ul>
                 {chats.map((chat) => {
-                return <Chat chatData={chat}/>
+                    return <Chat chatData={chat}/>
                 })}
             </ul>
         </div>

@@ -10,7 +10,7 @@ type ChatProps = {
 
 const Chat:React.FC<ChatProps> = ({chatData}:ChatProps) => {
     const [outlineStyle, setOutlineStyle] = useState<string>("")
-    const username:string = use(UserContext)
+    const {username} = use(UserContext)
     
     const [dynamicClasses, setDynamicClasses]= useState<string>(`
         ${username === chatData.to ? `green-outline-glow ${styles.myChat}` : `red-outline-glow`}    

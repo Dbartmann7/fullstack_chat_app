@@ -1,6 +1,6 @@
 
 
-import type { SocketRes } from "@shared/types";
+import type { ChatData, SocketRes } from "@shared/types";
 import { StatusCodes } from "http-status-codes";
 import { createContext, useCallback, useEffect, useRef, useState, type FC, type ReactNode } from "react";
 import { io, type Socket } from "socket.io-client";
@@ -9,7 +9,8 @@ type SocketContextValue = {
     isConnected:boolean,
     createSocket:() => void,
     destroySocket:() => void,
-    sendMessage: (sender:string, reciever:string, message:string) => boolean
+    sendMessage: (from:string, to:string, text:string) => boolean,
+    messages:ChatData[] | null
 }
 
 
@@ -21,9 +22,10 @@ export const SocketContext = createContext<SocketContextValue>({
     destroySocket: (): void => {
         throw new Error("Function not implemented.");
     },
-    sendMessage:(sender:string, reciever:string, message:string): boolean => {
+    sendMessage:(from:string, to:string, text:string): boolean => {
         throw new Error("Function not implemented.");
-    }
+    },
+    messages:[]
 })
 
 type ContextProps = {
@@ -33,6 +35,7 @@ type ContextProps = {
 export const SocketContextContainer:FC<ContextProps> = ({children}:ContextProps) => {
     const socketRef = useRef<Socket | null>(null)
     const [isConnected, setIsConnected] = useState<boolean>(false)
+    const [messages, setMessages] = useState<ChatData[] | null>(null)
 
     // update url for production build with env
     const URL:string = 'http://localhost:3000';
@@ -65,6 +68,10 @@ export const SocketContextContainer:FC<ContextProps> = ({children}:ContextProps)
             socket.on("connect", handleConnect);
             socket.on("disconnect", handleDisconnect);
             socket.io.on("reconnect", handleReconnect)
+            socket.on("fetchChats", (req:any) => {
+                console.log(req.body)
+                setMessages(req.body)
+            })
             socketRef.current = socket
         }
     }
@@ -83,14 +90,13 @@ export const SocketContextContainer:FC<ContextProps> = ({children}:ContextProps)
         
     }
 
-    const sendMessage = (sender:string, reciever:string, message:string): boolean => {
-        console.log(socketRef.current)
+    const sendMessage = (from:string, to:string, text:string): boolean => {
         if(!socketRef.current){
             throw Error("Socket does not exist")
         }
-        
-        socketRef.current.emit("sendMessage", {from:sender,to:reciever, text:message}, (res:any) => {
-            
+        console.log(from, to, text)
+        socketRef.current.emit("sendMessage", {from:from,to:to, text:text}, (res:any) => {
+     
             return res.ok
         })
         return false
@@ -104,13 +110,13 @@ export const SocketContextContainer:FC<ContextProps> = ({children}:ContextProps)
     }, []) 
 
 
-
     const value = {
         
         isConnected:isConnected,
         createSocket:createSocket,
         destroySocket:destroySocket,
-        sendMessage:sendMessage
+        sendMessage:sendMessage,
+        messages:messages
         
     }
 

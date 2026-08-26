@@ -2,7 +2,7 @@ import api from "@/util/api";
 import { isAxiosError }  from "axios";
 
 
-import { createContext, useState, type FC, type ReactNode } from "react";
+import { createContext, useEffect, useState, type FC, type ReactNode } from "react";
 
 type UserContextValue = {
     username:string,
@@ -13,6 +13,7 @@ type UserContextValue = {
     logout:any
     signUp:any
     checkCredentials:any
+    authLoading:boolean
 }
 
 
@@ -24,7 +25,8 @@ export const UserContext = createContext<UserContextValue>({
     login: "",
     logout:"",
     signUp: "",
-    checkCredentials:""
+    checkCredentials:"",
+    authLoading:true
 })
 
 type ContextProps = {
@@ -34,11 +36,14 @@ type ContextProps = {
 export const UserContextContainer:FC<ContextProps> = ({children}:ContextProps) => {
     const [username, setUsername] = useState<string>("")
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
-    
+    const [authLoading, setAuthLoading] = useState<boolean>(true)
     const checkCredentials = async () => {
         try{
             const res = await api.post("/api/auth/me",{} , {withCredentials:true})
             if(res.status === 200){
+                setUsername(res.data.userData.username)
+                setIsLoggedIn(true)
+                setAuthLoading(false)
                 return true
             }
             return false
@@ -139,6 +144,10 @@ export const UserContextContainer:FC<ContextProps> = ({children}:ContextProps) =
         setUsername("")
     }
 
+    useEffect(() => {
+        checkCredentials()
+    }, [])
+
 
     const value = {
         username:username,
@@ -148,7 +157,8 @@ export const UserContextContainer:FC<ContextProps> = ({children}:ContextProps) =
         login:login,
         logout:logout,
         signUp:signUp,
-        checkCredentials:checkCredentials
+        checkCredentials:checkCredentials,
+        authLoading:authLoading
     }
 
     return(

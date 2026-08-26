@@ -85,16 +85,25 @@ io.on('connection', async (socket) => {
     setTimeout(() => {
         socket.disconnect()
     }, expIn)
-
-
+    try{
+        const chatsRes = await db.query("SELECT * FROM chats WHERE \"sender\" = $1 OR \"reciever\" = $1",
+            [data.username]
+        )
+        socket.emit("fetchChats", {body:chatsRes.rows}, (res:any) => {
+            // possible retry logic if failed
+        })
+    }catch(err){
+        console.log(err)
+    }
+    
+    
     socket.on("disconnect", (reason) => {
         console.log(`user disconnected: ${reason}`)
     })
 
     socket.on("sendMessage", async (req:ChatData, callback) => {
-        
         try{
-            const dbRes = await db.query('INSERT INTO chats (sender, reciever, body) VALUES ($1, $2, $3)', 
+            const dbRes = await db.query('INSERT INTO chats (sender, reciever, text) VALUES ($1, $2, $3)', 
                 [req.from, req.to, req.text]
             )
             callback({
@@ -102,6 +111,7 @@ io.on('connection', async (socket) => {
                 message:"Message Sent!"
             })
         }catch(err){
+            console.log(err)
             callback({
                 ok:false,
                 message:err
