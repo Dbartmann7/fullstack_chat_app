@@ -1,5 +1,5 @@
 import { jwtData } from "@shared/types"
-import {pool} from "../db"
+import {db} from "../db"
 
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
@@ -36,7 +36,7 @@ export const login = async (req:Request, res:Response) => {
     }
 
     // fetch user data from db and match username and password
-    const userData = (await pool.query('SELECT * FROM users WHERE username=$1', [username])).rows[0]
+    const userData = (await db.query('SELECT * FROM users WHERE username=$1', [username])).rows[0]
     if(!userData){
         res.status(401).send({message:"Invalid username or password"})
         return
@@ -69,7 +69,7 @@ export const signUp = async (req:Request, res:Response) => {
 
     // check if username is taken
     // db already forbids duplicates, but this allows a relevant message to be displayed. 
-    const existingUser = await pool.query('SELECT * FROM users WHERE username=$1', [username])
+    const existingUser = await db.query('SELECT * FROM users WHERE username=$1', [username])
     if(existingUser.rows.length > 0){
         res.status(400).send({message:"User already exists"})
         return
@@ -77,7 +77,7 @@ export const signUp = async (req:Request, res:Response) => {
     
     try{
         const hashedPass = await bcrypt.hash(password, 10)
-        const dbRes = await pool.query('INSERT INTO users (username, password) VALUES ($1, $2)', 
+        const dbRes = await db.query('INSERT INTO users (username, password) VALUES ($1, $2)', 
             [username, hashedPass]
         )
         res.status(200).send({message:"Account created successfully", ok:true})

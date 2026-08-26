@@ -10,6 +10,7 @@ import type { ChatData, jwtData, SocketRes } from '@shared/types'
 import dotenv from "dotenv"
 import "dotenv/config";
 import authRouter from './routes/authRoutes'
+import { db } from './db'
 dotenv.config()
 
 const JWT_KEY:string | undefined = process.env.JWT_KEY
@@ -74,7 +75,7 @@ const io = new Server(server, {
 io.on('connection', async (socket) => {
     const cookies = cookie.parse(socket.handshake.headers.cookie || "");
     const data:jwtData | null = verifyJWT(cookies.token)
-    console.log(data)
+    
     if(!data){
         socket.disconnect()
         return
@@ -85,19 +86,27 @@ io.on('connection', async (socket) => {
         socket.disconnect()
     }, expIn)
 
-    console.log("user connected")
 
     socket.on("disconnect", (reason) => {
         console.log(`user disconnected: ${reason}`)
     })
 
-    socket.on("sendMessage", (req:ChatData, callback) => {
+    socket.on("sendMessage", async (req:ChatData, callback) => {
         
-        console.log(req)
-        tempChatStorage.push(req)
-        callback({
-            status:StatusCodes.OK
-        })
+        try{
+            const dbRes = await db.query('INSERT INTO chats (sender, reciever, body) VALUES ($1, $2, $3)', 
+                [req.from, req.to, req.text]
+            )
+            callback({
+                ok:true,
+                message:"Message Sent!"
+            })
+        }catch(err){
+            callback({
+                ok:false,
+                message:err
+            })
+        }
     })
 })
 

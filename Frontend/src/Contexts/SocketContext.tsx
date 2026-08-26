@@ -9,7 +9,7 @@ type SocketContextValue = {
     isConnected:boolean,
     createSocket:() => void,
     destroySocket:() => void,
-    sendMessage: (message:string) => void
+    sendMessage: (sender:string, reciever:string, message:string) => boolean
 }
 
 
@@ -21,7 +21,7 @@ export const SocketContext = createContext<SocketContextValue>({
     destroySocket: (): void => {
         throw new Error("Function not implemented.");
     },
-    sendMessage:(message: string): void => {
+    sendMessage:(sender:string, reciever:string, message:string): boolean => {
         throw new Error("Function not implemented.");
     }
 })
@@ -83,21 +83,17 @@ export const SocketContextContainer:FC<ContextProps> = ({children}:ContextProps)
         
     }
 
-    const sendMessage = (message:string): void => {
+    const sendMessage = (sender:string, reciever:string, message:string): boolean => {
         console.log(socketRef.current)
         if(!socketRef.current){
             throw Error("Socket does not exist")
         }
         
-        socketRef.current.emit("sendMessage", message, (res:SocketRes) => {
+        socketRef.current.emit("sendMessage", {from:sender,to:reciever, text:message}, (res:any) => {
             
-            if(res.status !== StatusCodes.OK){
-                console.log(res.error)
-            }else{
-                console.log("message sent!")
-            }
+            return res.ok
         })
-       
+        return false
     }
     
     
