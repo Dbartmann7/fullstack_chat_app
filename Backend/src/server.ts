@@ -17,11 +17,6 @@ const JWT_KEY:string | undefined = process.env.JWT_KEY
 if(!JWT_KEY) {
     throw new Error("NO JWT KEY, PLEASE SET A JWT KEY")
 }
-const JWT_LIFE:number = 60 * 60 * 1000
-
-let tempChatStorage:ChatData[] = []
-
-
 
 //  ************************* Functions *************************  \\
 
@@ -75,11 +70,11 @@ const io = new Server(server, {
 io.on('connection', async (socket) => {
     const cookies = cookie.parse(socket.handshake.headers.cookie || "");
     const data:jwtData | null = verifyJWT(cookies.token)
-    
     if(!data){
         socket.disconnect()
         return
     }
+    
     let expIn:number = data.exp! * 1000 - Date.now() || 1
 
     setTimeout(() => {

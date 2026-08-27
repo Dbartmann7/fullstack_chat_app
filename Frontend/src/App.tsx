@@ -1,24 +1,14 @@
-import { use, useEffect, useState } from 'react'
+import { use, } from 'react'
 import './App.css'
 
 import {UserContext} from './Contexts/userContext'
 import { ChatPage } from './ChatPage'
 import { LoginPage } from './LoginPage'
-import { SocketContext, SocketContextContainer } from './Contexts/SocketContext'
+import { SocketContextContainer } from './Contexts/SocketContext'
 
 
 function App() {
-  const {isLoggedIn, checkCredentials, authLoading} = use(UserContext)
-
-
-  // useEffect(() => {
-  //   const attemptJWTLogin = async () => {
-  //     await checkCredentials()
-  //     setAuthLoading(false)
-  //   }
-    
-  //   attemptJWTLogin()
-  // }, [])
+  const {isLoggedIn, authLoading} = use(UserContext)
 
   if(authLoading){
     return <h1></h1>
