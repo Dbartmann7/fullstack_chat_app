@@ -48,7 +48,7 @@ export const login = async (req:Request, res:Response) => {
     }
 
     // create jwt and login
-    let payload:jwtData = {username:username}
+    let payload = {username:username}
     let token = jwt.sign(payload, process.env.JWT_KEY!, {expiresIn:`${JWT_LIFE}ms`})
     res.cookie("token", token, {
         httpOnly:true,

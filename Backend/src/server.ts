@@ -66,23 +66,29 @@ const io = new Server(server, {
     }
 })
 
-
-io.on('connection', async (socket) => {
-    const cookies = cookie.parse(socket.handshake.headers.cookie || "");
+io.use((socket, next) => {
+  
+    const cookies = cookie.parse(socket.handshake.headers.cookie || "")
     const data:jwtData | null = verifyJWT(cookies.token)
     if(!data){
-        socket.disconnect()
-        return
+        next(new Error("Unauthorized"))
     }
+    socket.data.user = data
+    next()
+
+})
+
+io.on('connection', async (socket) => {
+    const userData:jwtData = socket.data.user
     
-    let expIn:number = data.exp! * 1000 - Date.now() || 1
+    let expIn:number = userData.exp * 1000 - Date.now() 
 
     setTimeout(() => {
         socket.disconnect()
     }, expIn)
     try{
         const chatsRes = await db.query("SELECT * FROM chats WHERE \"sender\" = $1 OR \"reciever\" = $1",
-            [data.username]
+            [userData.username]
         )
         socket.emit("fetchChats", {body:chatsRes.rows}, (res:any) => {
             // possible retry logic if failed

@@ -20,5 +20,5 @@ export type SocketEmitPackage = {
 
 export type jwtData = {
   username:string,
-  exp?:number
+  exp:number
 }
