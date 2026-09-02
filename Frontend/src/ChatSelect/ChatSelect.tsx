@@ -1,5 +1,8 @@
 import { SocketContext } from "@/Contexts/SocketContext"
 import { use, useEffect } from "react"
+import ChatPreview from "./ChatPreview"
+
+import styles from "./ChatSelect.module.css"
 
 const ChatSelect = () => {
     const {createSocket, chats} = use(SocketContext)    
@@ -11,13 +14,13 @@ const ChatSelect = () => {
         console.log(chats)
     }, [chats])
     return (
-        <>
+        <div className={styles.container}>
         {
             chats.map((chat, i) => {
-                return <div>{chat.partner}</div>
+                return <ChatPreview data={chat}/>
             })
         }
-        </>
+        </div>
     )
 }
 

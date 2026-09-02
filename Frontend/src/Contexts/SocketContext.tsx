@@ -1,5 +1,6 @@
 
 
+import api from "@/util/api";
 import { type Chat, type Message} from "@shared/types";
 import { createContext, useCallback, useEffect, useRef, useState, type FC, type ReactNode } from "react";
 import { io, type Socket } from "socket.io-client";
@@ -71,14 +72,7 @@ export const SocketContextContainer:FC<ContextProps> = ({children}:ContextProps)
             socket.on("connect", handleConnect);
             socket.on("disconnect", handleDisconnect);
             socket.io.on("reconnect", handleReconnect)
-            socket.on("fetchChats", (res:any) => {
-                console.log(res.message)
-                if(res.ok){
-                    console.log(res.body)
-                    setChats(res.body)
-                }
-                
-            })
+           
             socketRef.current = socket
         }
     }
@@ -111,6 +105,18 @@ export const SocketContextContainer:FC<ContextProps> = ({children}:ContextProps)
     
     
     useEffect(() => {
+        const fetchChats = async () => {
+            try{
+                const chatRes = await api.get("api/chat", {
+                    withCredentials:true
+                })
+                setChats(chatRes.data.body)
+            }catch(err){
+                console.log(err)
+            }
+        }
+        
+        fetchChats()
         return () => {
             destroySocket()
         }       

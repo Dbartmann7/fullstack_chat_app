@@ -11,6 +11,7 @@ import dotenv from "dotenv"
 import "dotenv/config";
 import authRouter from './routes/authRoutes'
 import { db } from './db'
+import chatRouter from './routes/chatRoutes'
 dotenv.config()
 
 const JWT_KEY:string | undefined = process.env.JWT_KEY
@@ -52,7 +53,7 @@ app.use(cookieParser())
 const server = createServer(app)
 
 app.use("/api/auth", authRouter)
-
+app.use("/api/chat", chatRouter)
 app.get('/', (req, res) => {
     res.send("Server for Chat App")
 })
@@ -89,35 +90,7 @@ io.on('connection', async (socket) => {
         socket.disconnect()
     }, expIn)
 
-    try{
-        
-        const chatsRes = await db.query(`SELECT cm.chat_id AS id, cm2.user_id AS partner_id, u.username AS partner FROM chat_members cm
-                JOIN chat_members cm2 ON cm.chat_id = cm2.chat_id
-                JOIN users u ON cm2.user_id = u.id
-                WHERE cm.user_id = $1 AND cm2.user_id != $1
-                ;`,
-            [userData.user_id]
-        )
-        
-
-        let chats = chatsRes.rows
-        for(let i=0; i<chats.length; i++){
-            let messages = (await db.query(`SELECT * FROM messages WHERE chat_id = $1
-                                            ORDER BY created_at ASC`, 
-                            [chats[i].id])).rows || []
-            
-            chats[i] = {...chats[i], messages:messages}
-            
-        }
-        console.log(chats[0])
-        console.log(chats[0].messages)
-        socket.emit("fetchChats", {ok:true, message:"Chats fetched successfully!",body:chats}, (res:any) => {
-            // possible retry logic if failed
-        })
-    }catch(err){
-        socket.emit("fetchChats", {ok:false, message:err})
-    }
-    
+   
     socket.join(`User:${userData.username}`)
 
     socket.on("disconnect", (reason) => {
