@@ -70,9 +70,11 @@ io.use((socket, next) => {
   
     const cookies = cookie.parse(socket.handshake.headers.cookie || "")
     const data:jwtData | null = verifyJWT(cookies.token)
+    console.log(data)
     if(!data){
         next(new Error("Unauthorized"))
     }
+
     socket.data.user = data
     next()
 
@@ -80,24 +82,44 @@ io.use((socket, next) => {
 
 io.on('connection', async (socket) => {
     const userData:jwtData = socket.data.user
-    
+
     let expIn:number = userData.exp * 1000 - Date.now() 
 
     setTimeout(() => {
         socket.disconnect()
     }, expIn)
+
     try{
-        const chatsRes = await db.query("SELECT * FROM chats WHERE \"sender\" = $1 OR \"reciever\" = $1",
-            [userData.username]
+        
+        const chatsRes = await db.query(`SELECT cm.chat_id AS id, cm2.user_id AS partner_id, u.username AS partner FROM chat_members cm
+                JOIN chat_members cm2 ON cm.chat_id = cm2.chat_id
+                JOIN users u ON cm2.user_id = u.id
+                WHERE cm.user_id = $1 AND cm2.user_id != $1
+                ;`,
+            [userData.user_id]
         )
-        socket.emit("fetchChats", {body:chatsRes.rows}, (res:any) => {
+        
+
+        let chats = chatsRes.rows
+        for(let i=0; i<chats.length; i++){
+            let messages = (await db.query(`SELECT * FROM messages WHERE chat_id = $1
+                                            ORDER BY created_at ASC`, 
+                            [chats[i].id])).rows || []
+            
+            chats[i] = {...chats[i], messages:messages}
+            
+        }
+        console.log(chats[0])
+        console.log(chats[0].messages)
+        socket.emit("fetchChats", {ok:true, message:"Chats fetched successfully!",body:chats}, (res:any) => {
             // possible retry logic if failed
         })
     }catch(err){
-        console.log(err)
+        socket.emit("fetchChats", {ok:false, message:err})
     }
     
-    
+    socket.join(`User:${userData.username}`)
+
     socket.on("disconnect", (reason) => {
         console.log(`user disconnected: ${reason}`)
     })
@@ -107,6 +129,7 @@ io.on('connection', async (socket) => {
             const dbRes = await db.query('INSERT INTO chats (sender, reciever, text) VALUES ($1, $2, $3)', 
                 [req.from, req.to, req.text]
             )
+            io.to(`User:${req.to}`).emit('sendMessage', req)
             callback({
                 ok:true,
                 message:"Message Sent!"
@@ -118,6 +141,8 @@ io.on('connection', async (socket) => {
                 message:err
             })
         }
+
+        
     })
 })
 

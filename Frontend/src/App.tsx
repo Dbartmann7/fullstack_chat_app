@@ -2,9 +2,9 @@ import { use, } from 'react'
 import './App.css'
 
 import {UserContext} from './Contexts/userContext'
-import { ChatPage } from './ChatPage'
 import { LoginPage } from './LoginPage'
 import { SocketContextContainer } from './Contexts/SocketContext'
+import ChatSelect from './ChatSelect/ChatSelect'
 
 
 function App() {
@@ -19,7 +19,7 @@ function App() {
       <div className='app'>
         {isLoggedIn ? 
             <SocketContextContainer>
-              <ChatPage/> 
+              <ChatSelect/>
             </SocketContextContainer>
           : 
             <LoginPage/>

@@ -4,6 +4,21 @@ export type ChatData = {
   from:string;
 };
 
+export type Chat = {
+  id:number;
+  partner_id:number
+  partner:string;
+  messages:Message[];
+}
+
+export type Message = {
+  id:number;
+  chat_id:number
+  sender_id:number;
+  created_at:number;
+  body:string;
+}
+
 export type UserData = {
   id:number,
   username:string
@@ -20,5 +35,6 @@ export type SocketEmitPackage = {
 
 export type jwtData = {
   username:string,
+  user_id:number,
   exp:number
 }

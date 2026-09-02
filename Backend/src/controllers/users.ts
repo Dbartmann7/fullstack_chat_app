@@ -16,6 +16,7 @@ export const verifyJWT = async (req:Request, res:Response) => {
     }
     try{
         const tokenData = jwt.verify(token, process.env.JWT_KEY!) as jwtData
+   
         res.status(200).send({message:"Valid credentials", userData:tokenData})
         return
     }catch(err){
@@ -48,8 +49,9 @@ export const login = async (req:Request, res:Response) => {
     }
 
     // create jwt and login
-    let payload = {username:username}
+    let payload = {username:username, user_id:userData.id}
     let token = jwt.sign(payload, process.env.JWT_KEY!, {expiresIn:`${JWT_LIFE}ms`})
+
     res.cookie("token", token, {
         httpOnly:true,
         secure: false,

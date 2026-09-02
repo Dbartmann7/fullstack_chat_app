@@ -1,7 +1,6 @@
 
 
-import type { ChatData, SocketRes } from "@shared/types";
-import { StatusCodes } from "http-status-codes";
+import { type Chat, type Message} from "@shared/types";
 import { createContext, useCallback, useEffect, useRef, useState, type FC, type ReactNode } from "react";
 import { io, type Socket } from "socket.io-client";
 
@@ -10,7 +9,9 @@ type SocketContextValue = {
     createSocket:() => void,
     destroySocket:() => void,
     sendMessage: (from:string, to:string, text:string) => boolean,
-    messages:ChatData[] | null
+    chats:Chat[]
+    messages:Message[] | null
+    
 }
 
 
@@ -25,6 +26,7 @@ export const SocketContext = createContext<SocketContextValue>({
     sendMessage:(from:string, to:string, text:string): boolean => {
         throw new Error("Function not implemented.");
     },
+    chats:[],
     messages:[]
 })
 
@@ -35,7 +37,8 @@ type ContextProps = {
 export const SocketContextContainer:FC<ContextProps> = ({children}:ContextProps) => {
     const socketRef = useRef<Socket | null>(null)
     const [isConnected, setIsConnected] = useState<boolean>(false)
-    const [messages, setMessages] = useState<ChatData[] | null>(null)
+    const [chats, setChats] = useState<Chat[]>([])
+    const [messages, setMessages] = useState<Message[] | null>(null)
 
     // update url for production build with env
     const URL:string = 'http://localhost:3000';
@@ -68,9 +71,13 @@ export const SocketContextContainer:FC<ContextProps> = ({children}:ContextProps)
             socket.on("connect", handleConnect);
             socket.on("disconnect", handleDisconnect);
             socket.io.on("reconnect", handleReconnect)
-            socket.on("fetchChats", (req:any) => {
-                console.log(req.body)
-                setMessages(req.body)
+            socket.on("fetchChats", (res:any) => {
+                console.log(res.message)
+                if(res.ok){
+                    console.log(res.body)
+                    setChats(res.body)
+                }
+                
             })
             socketRef.current = socket
         }
@@ -116,6 +123,7 @@ export const SocketContextContainer:FC<ContextProps> = ({children}:ContextProps)
         createSocket:createSocket,
         destroySocket:destroySocket,
         sendMessage:sendMessage,
+        chats:chats,
         messages:messages
         
     }
