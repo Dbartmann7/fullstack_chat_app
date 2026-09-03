@@ -5,23 +5,19 @@ import type { Chat, ChatData } from "@shared/types"
 import { ChatArea } from "./Components/ChatArea"
 import { SocketContext } from "@/Contexts/SocketContext"
 import { InputBar } from "./Components/ChatInputBar"
+import ChatPreview from "@/ChatSelect/ChatPreview"
+import ChatSelect from "@/ChatSelect/ChatSelect"
+import ChatDisplay from "./ChatDisplay/ChatDisplay"
+
 
 export const ChatPage = () => {
-    const {username, checkCredentials, logout} = use(UserContext);
-    const {isConnected, createSocket, destroySocket, messages} = use(SocketContext);
-    const [othername, setOtherName] = useState<string>("other");
+  const {username, checkCredentials, logout} = use(UserContext);
+  const {isConnected, createSocket, destroySocket,chats, messages} = use(SocketContext);
+  const [selectedChat, setSelectedChat] = useState<number>(-1)
 
-    const [messagesState, setMessages] = useState<Chat[]>([])
-
-
-  
 
   useEffect(() => {
     createSocket()
-
-    return () => {
-        destroySocket()
-    }
 
   }, [])
 
@@ -40,15 +36,25 @@ export const ChatPage = () => {
     }
   }, [isConnected])
 
-  if(!messages) return <h1>Loading...</h1>
+
+
+  const selectChat = (index:number) => {
+    setSelectedChat(index)
+  }
 
   return(
       <main className={styles.mobileMain}>
-        <section className={styles.chatMain}>
-          <h1 className={styles.chatHeader}>Chat Name</h1>
-          <ChatArea chats={messages}/>
-          <InputBar/>
-        </section>
+        
+        <div className={styles.chatMain}>
+          { 
+          selectedChat < 0 ?
+            <ChatSelect onClick={selectChat}/>
+            :
+            
+            <ChatDisplay selectedChat={selectedChat} selectChat={selectChat}/>
+          }
+          
+        </div>
       </main>
   )
 }

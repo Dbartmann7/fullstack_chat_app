@@ -11,7 +11,7 @@ type SocketContextValue = {
     destroySocket:() => void,
     sendMessage: (from:string, to:string, text:string) => boolean,
     chats:Chat[]
-    messages:Message[] | null
+    messages:Message[]
     
 }
 
@@ -39,7 +39,7 @@ export const SocketContextContainer:FC<ContextProps> = ({children}:ContextProps)
     const socketRef = useRef<Socket | null>(null)
     const [isConnected, setIsConnected] = useState<boolean>(false)
     const [chats, setChats] = useState<Chat[]>([])
-    const [messages, setMessages] = useState<Message[] | null>(null)
+    const [messages, setMessages] = useState<Message[]>([])
 
     // update url for production build with env
     const URL:string = 'http://localhost:3000';

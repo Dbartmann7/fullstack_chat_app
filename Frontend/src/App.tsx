@@ -5,6 +5,7 @@ import {UserContext} from './Contexts/userContext'
 import { LoginPage } from './LoginPage'
 import { SocketContextContainer } from './Contexts/SocketContext'
 import ChatSelect from './ChatSelect/ChatSelect'
+import { ChatPage } from './ChatPage'
 
 
 function App() {
@@ -19,7 +20,7 @@ function App() {
       <div className='app'>
         {isLoggedIn ? 
             <SocketContextContainer>
-              <ChatSelect/>
+              <ChatPage/>
             </SocketContextContainer>
           : 
             <LoginPage/>

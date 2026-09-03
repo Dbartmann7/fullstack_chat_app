@@ -16,20 +16,19 @@ export const getChats = async (req:Request, res:Response) => {
             [userData.user_id]
         )
             
-
+        console.log(chatsRes.rows)
         let chats = chatsRes.rows
         for(let i=0; i<chats.length; i++){
             let messages = (await db.query(`SELECT * FROM messages WHERE chat_id = $1
                                             ORDER BY created_at ASC`, 
                             [chats[i].id])).rows || []    
             chats[i] = {...chats[i], messages:messages}
+            console.log(chats[i])
         }
-        console.log(chats[0])
-        console.log(chats[0].messages)
+        
         res.status(200).send({ok:true, body:chats, message:"Chats Fetched Successfully!"})
     }catch(err){
-        console.log(err)
+        res.status(500).send({ok:false, message:err})
     }
 
-    return res.status(200).send({message:"2s0a"})
 }

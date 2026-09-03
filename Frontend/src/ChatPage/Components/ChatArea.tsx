@@ -1,18 +1,20 @@
-import type { FC } from "react";
+import { use, type FC } from "react";
 import styles from "./ChatArea.module.css"
 import type { ChatData } from "../../../../shared/types";
 import Chat from "../../Chat";
+import { SocketContext } from "@/Contexts/SocketContext";
 
 type ChatAreaProps = {
-    chats:ChatData[]
+    selectedChat:number
 }
-export const ChatArea:FC<ChatAreaProps> = ({chats}:ChatAreaProps) => {
+export const ChatArea:FC<ChatAreaProps> = ({selectedChat}:ChatAreaProps) => {
+    const {chats} = use(SocketContext)   
 
     return(
         <div className={styles.chatArea}>
             <ul>
-                {chats.map((chat) => {
-                    return <Chat chatData={chat}/>
+                {chats[selectedChat].messages.map((message) => {
+                    return <Chat chatData={message}/>
                 })}
             </ul>
         </div>
