@@ -6,7 +6,7 @@ import cookieParser from "cookie-parser"
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import { Server } from 'socket.io'
 import { StatusCodes } from "http-status-codes";
-import type { ChatData, jwtData, SocketRes } from '@shared/types'
+import type { ChatData, jwtData, Message, SocketRes } from '@shared/types'
 import dotenv from "dotenv"
 import "dotenv/config";
 import authRouter from './routes/authRoutes'
@@ -97,12 +97,11 @@ io.on('connection', async (socket) => {
         console.log(`user disconnected: ${reason}`)
     })
 
-    socket.on("sendMessage", async (req:ChatData, callback) => {
+    socket.on("sendMessage", async (req:Message, callback) => {
         try{
-            const dbRes = await db.query('INSERT INTO chats (sender, reciever, text) VALUES ($1, $2, $3)', 
-                [req.from, req.to, req.text]
+            const dbRes = await db.query('INSERT INTO messages (chat_id, sender_id, body, created_at) VALUES ($1, $2, $3, $4)', 
+                [req.chat_id, req.sender_id, req.body, req.created_at]
             )
-            io.to(`User:${req.to}`).emit('sendMessage', req)
             callback({
                 ok:true,
                 message:"Message Sent!"

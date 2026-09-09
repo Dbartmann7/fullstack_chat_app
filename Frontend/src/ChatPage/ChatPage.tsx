@@ -11,10 +11,9 @@ import ChatDisplay from "./ChatDisplay/ChatDisplay"
 
 
 export const ChatPage = () => {
-  const {username, checkCredentials, logout} = use(UserContext);
-  const {isConnected, createSocket, destroySocket,chats, messages} = use(SocketContext);
-  const [selectedChat, setSelectedChat] = useState<number>(-1)
-
+  const { checkCredentials, logout} = use(UserContext);
+  const {isConnected, createSocket, selectedChat} = use(SocketContext);
+  
 
   useEffect(() => {
     createSocket()
@@ -38,23 +37,21 @@ export const ChatPage = () => {
 
 
 
-  const selectChat = (index:number) => {
-    setSelectedChat(index)
-  }
 
   return(
       <main className={styles.mobileMain}>
         
-        <div className={styles.chatMain}>
+        {/* <div className={styles.chatMain}> */}
           { 
-          selectedChat < 0 ?
-            <ChatSelect onClick={selectChat}/>
-            :
+          selectedChat ?
+          <ChatDisplay/>
             
-            <ChatDisplay selectedChat={selectedChat} selectChat={selectChat}/>
+            :
+            <ChatSelect />
+            
           }
           
-        </div>
+        {/* </div> */}
       </main>
   )
 }

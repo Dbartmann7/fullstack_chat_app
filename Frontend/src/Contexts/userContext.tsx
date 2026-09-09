@@ -1,11 +1,12 @@
 import api from "@/util/api";
+import type { UserData } from "@shared/types";
 import { isAxiosError }  from "axios";
 
 
 import { createContext, useEffect, useState, type FC, type ReactNode } from "react";
 
 type UserContextValue = {
-    username:string,
+    userData:UserData
     isLoggedIn:Boolean
     isValidUsername:any
     isValidPassword:any
@@ -18,7 +19,7 @@ type UserContextValue = {
 
 
 export const UserContext = createContext<UserContextValue>({
-    username:"",
+    userData:{id:-1, username:""},
     isLoggedIn:false,
     isValidUsername:"",
     isValidPassword:"",
@@ -34,14 +35,14 @@ type ContextProps = {
 }
 
 export const UserContextContainer:FC<ContextProps> = ({children}:ContextProps) => {
-    const [username, setUsername] = useState<string>("")
+    const [userData, setUserData] = useState<UserData>({id:-1, username:"string"})
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
     const [authLoading, setAuthLoading] = useState<boolean>(true)
     const checkCredentials = async () => {
         try{
             const res = await api.get("/api/auth/me", {withCredentials:true})
             if(res.status === 200){
-                setUsername(res.data.userData.username)
+                setUserData({id:res.data.userData.user_id, username:res.data.userData.username})
                 setIsLoggedIn(true)
                 return true
             }
@@ -53,6 +54,10 @@ export const UserContextContainer:FC<ContextProps> = ({children}:ContextProps) =
             setAuthLoading(false)
         }
     }
+
+    useEffect(() => {
+        console.log(userData)
+    }, [userData])
 
     const isValidUsername = (username:string) => {
         const userRegex = /^[a-zA-Z0-9]{3,18}$/
@@ -74,7 +79,7 @@ export const UserContextContainer:FC<ContextProps> = ({children}:ContextProps) =
             console.log(res)
             if(res.status === 200){
                 setIsLoggedIn(true)
-                setUsername(username)
+                setUserData({id:res.data.userData.user_id, username:res.data.userData.username})
             }
             return {
                 ok:true,
@@ -82,7 +87,7 @@ export const UserContextContainer:FC<ContextProps> = ({children}:ContextProps) =
             }
         }catch(err){
             setIsLoggedIn(false)
-            setUsername("")
+            setUserData({id:-1, username:""})
             let message = ""
 
             isAxiosError(err) ? message = err.response?.data.message : "Something unexpected went wrong"
@@ -136,7 +141,7 @@ export const UserContextContainer:FC<ContextProps> = ({children}:ContextProps) =
             withCredentials:true
         })
         setIsLoggedIn(false)
-        setUsername("")
+        setUserData({id:-1, username:""})
     }
 
     useEffect(() => {
@@ -145,7 +150,7 @@ export const UserContextContainer:FC<ContextProps> = ({children}:ContextProps) =
 
 
     const value = {
-        username:username,
+        userData:userData,
         isLoggedIn:isLoggedIn,
         isValidUsername:isValidUsername,
         isValidPassword:isValidPassword,

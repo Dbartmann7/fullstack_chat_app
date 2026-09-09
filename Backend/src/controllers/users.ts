@@ -57,7 +57,7 @@ export const login = async (req:Request, res:Response) => {
         secure: false,
         sameSite:"lax",
         maxAge: JWT_LIFE
-    }).status(200).send({message:"login successful"})
+    }).status(200).send({message:"login successful", userData:payload})
 
 }
 

@@ -1,18 +1,19 @@
 
 
 import api from "@/util/api";
-import { type Chat, type Message} from "@shared/types";
-import { createContext, useCallback, useEffect, useRef, useState, type FC, type ReactNode } from "react";
+import { type Chat } from "@shared/types";
+import { createContext, use, useCallback, useEffect, useRef, useState, type FC, type ReactNode } from "react";
 import { io, type Socket } from "socket.io-client";
+import { UserContext } from "./userContext";
 
 type SocketContextValue = {
     isConnected:boolean,
     createSocket:() => void,
     destroySocket:() => void,
-    sendMessage: (from:string, to:string, text:string) => boolean,
+    sendMessage: (body:string) => boolean,
     chats:Chat[]
-    messages:Message[]
-    
+    selectedChat:Chat | null
+    selectChat:(index:number) => void
 }
 
 
@@ -24,11 +25,14 @@ export const SocketContext = createContext<SocketContextValue>({
     destroySocket: (): void => {
         throw new Error("Function not implemented.");
     },
-    sendMessage:(from:string, to:string, text:string): boolean => {
+    sendMessage: (body: string): boolean => {
         throw new Error("Function not implemented.");
     },
-    chats:[],
-    messages:[]
+    chats: [],
+    selectedChat: null,
+    selectChat: function (index: number): void {
+        throw new Error("Function not implemented.");
+    }
 })
 
 type ContextProps = {
@@ -39,8 +43,9 @@ export const SocketContextContainer:FC<ContextProps> = ({children}:ContextProps)
     const socketRef = useRef<Socket | null>(null)
     const [isConnected, setIsConnected] = useState<boolean>(false)
     const [chats, setChats] = useState<Chat[]>([])
-    const [messages, setMessages] = useState<Message[]>([])
+    const [selectedChat, setSelectedChat] = useState<Chat | null>(null)
 
+    const {userData} = use(UserContext)
     // update url for production build with env
     const URL:string = 'http://localhost:3000';
     
@@ -91,12 +96,18 @@ export const SocketContextContainer:FC<ContextProps> = ({children}:ContextProps)
         
     }
 
-    const sendMessage = (from:string, to:string, text:string): boolean => {
+    const selectChat = (index:number) => {
+        index < 0 ? setSelectedChat(null) : setSelectedChat(chats[index])
+    }
+
+    const sendMessage = (body:string ): boolean => {
         if(!socketRef.current){
             throw Error("Socket does not exist")
         }
-        console.log(from, to, text)
-        socketRef.current.emit("sendMessage", {from:from,to:to, text:text}, (res:any) => {
+        if(!selectedChat){
+            throw Error("No chat selected, message cannot be sent")
+        }
+        socketRef.current.emit("sendMessage", {chat_id:selectedChat.id, sender_id:userData.id, body:body, createdAt:Date.now()}, (res:any) => {
      
             return res.ok
         })
@@ -122,16 +133,15 @@ export const SocketContextContainer:FC<ContextProps> = ({children}:ContextProps)
         }       
     }, []) 
 
-
     const value = {
         
         isConnected:isConnected,
         createSocket:createSocket,
         destroySocket:destroySocket,
         sendMessage:sendMessage,
-        chats:chats,
-        messages:messages
-        
+        chats:chats,     
+        selectedChat:selectedChat,
+        selectChat:selectChat   
     }
 
     return(

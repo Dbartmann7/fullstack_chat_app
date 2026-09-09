@@ -5,15 +5,15 @@ import Chat from "../../Chat";
 import { SocketContext } from "@/Contexts/SocketContext";
 
 type ChatAreaProps = {
-    selectedChat:number
+   
 }
-export const ChatArea:FC<ChatAreaProps> = ({selectedChat}:ChatAreaProps) => {
-    const {chats} = use(SocketContext)   
+export const ChatArea:FC<ChatAreaProps> = ({}:ChatAreaProps) => {
+    const {selectedChat} = use(SocketContext)   
 
     return(
         <div className={styles.chatArea}>
             <ul>
-                {chats[selectedChat].messages.map((message) => {
+                {selectedChat!.messages.map((message) => {
                     return <Chat chatData={message}/>
                 })}
             </ul>

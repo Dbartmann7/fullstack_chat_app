@@ -10,18 +10,14 @@ type ChatProps = {
 
 const Chat:React.FC<ChatProps> = ({chatData}:ChatProps) => {
     const [outlineStyle, setOutlineStyle] = useState<string>("")
-    const {username} = use(UserContext)
+    const {userData} = use(UserContext)
     
-    // const [dynamicClasses, setDynamicClasses]= useState<string>(`
-    //     ${username === chatData.to ? `green-outline-glow ${styles.myChat}` : `red-outline-glow`}    
-    // `)
-
-    const [dynamicClasses, setDynamicClasses]= useState<string>('')
-    useEffect(() => {
-        // console.log(username)
-        // console.log(chatData.to)
-        // username === chatData.to ? setOutlineStyle('green-outline-glow') : setOutlineStyle('red-outline-glow')
-    }, [])
+    const [dynamicClasses, setDynamicClasses]= useState<string>(`
+        ${userData.id === chatData.sender_id ? `green-outline-glow ${styles.myChat}` : `red-outline-glow`}    
+    `)
+    // useEffect(() => {
+    //     userData.id === chatData.sender_id ? setOutlineStyle('green-outline-glow') : setOutlineStyle('red-outline-glow')
+    // }, [])
     return(
         <div className={`${styles.chat}  ${dynamicClasses}`}>
             {chatData.body}

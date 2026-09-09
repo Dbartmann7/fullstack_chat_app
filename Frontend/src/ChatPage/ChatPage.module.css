@@ -34,3 +34,18 @@
   padding-left: 20px;
 }
 
+
+.backBtn {
+  width:fit-content;
+  height:fit-content;
+  color:white;
+  background-color: transparent;
+  border:1px solid white;
+  display: flex;
+}
+
+.backIcon {
+  padding:2px;
+}
+
+

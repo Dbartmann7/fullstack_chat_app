@@ -5,17 +5,17 @@ import ChatPreview from "./ChatPreview"
 import styles from "./ChatSelect.module.css"
 
 type ChatSelectProps = {
-    onClick: (index:number) => void
+
 }
 
-const ChatSelect = ({onClick}:ChatSelectProps) => {
+const ChatSelect = ({}:ChatSelectProps) => {
     const {chats} = use(SocketContext)    
     
     return (
         <div className={styles.container}>
         {
             chats.map((chat, i) => {
-                return <ChatPreview data={chat} index={i} onClick={onClick}/>
+                return <ChatPreview data={chat} index={i}/>
             })  
         }
         </div>
