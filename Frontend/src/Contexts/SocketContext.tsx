@@ -77,7 +77,39 @@ export const SocketContextContainer:FC<ContextProps> = ({children}:ContextProps)
             socket.on("connect", handleConnect);
             socket.on("disconnect", handleDisconnect);
             socket.io.on("reconnect", handleReconnect)
-           
+            socket.on("newMessage", (req) => {
+                console.log(req)
+                setChats((prevChats) => {
+                    let newChats = [...prevChats]
+                    return newChats.map((chat) => {
+                        console.log(chat)
+                        if(chat.id !== req.chat_id){
+                            return chat
+                        }
+                        return {
+                            ...chat,
+                            messages:[
+                                ...chat.messages,
+                                req
+                            ]
+                        }
+                    })
+                }) 
+                setSelectedChat((prev) => {
+                    if(!prev) return null
+                    if(prev.id !== req.chat_id){
+                        return prev
+                    }
+                    return {
+                        ...prev,
+                        messages:[
+                            ...prev.messages,
+                            req
+                        ]
+                    }
+                })
+                
+            })
             socketRef.current = socket
         }
     }
@@ -133,6 +165,9 @@ export const SocketContextContainer:FC<ContextProps> = ({children}:ContextProps)
         }       
     }, []) 
 
+    useEffect(() => {
+        console.log(selectedChat)
+    }, [selectedChat])
     const value = {
         
         isConnected:isConnected,

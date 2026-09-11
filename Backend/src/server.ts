@@ -91,7 +91,7 @@ io.on('connection', async (socket) => {
     }, expIn)
 
    
-    socket.join(`User:${userData.username}`)
+    socket.join(`User:${userData.user_id}`)
 
     socket.on("disconnect", (reason) => {
         console.log(`user disconnected: ${reason}`)
@@ -99,9 +99,16 @@ io.on('connection', async (socket) => {
 
     socket.on("sendMessage", async (req:Message, callback) => {
         try{
-            const dbRes = await db.query('INSERT INTO messages (chat_id, sender_id, body, created_at) VALUES ($1, $2, $3, $4)', 
+            const messageRes = await db.query('INSERT INTO messages (chat_id, sender_id, body, created_at) VALUES ($1, $2, $3, $4) RETURNING id', 
                 [req.chat_id, req.sender_id, req.body, req.created_at]
             )
+            console.log(messageRes.rows)
+            const participants = await db.query('SELECT user_id FROM chat_members WHERE chat_id = $1', 
+                [req.chat_id]
+            )
+            for(let i=0; i<participants.rows.length; i++){
+                io.to(`User:${participants.rows[i].user_id}`).emit("newMessage", {...req, id:messageRes.rows[0].id})
+            }
             callback({
                 ok:true,
                 message:"Message Sent!"
