@@ -1,12 +1,11 @@
 
 
 import { SocketContext } from "@/Contexts/SocketContext"
-import { type Chat } from "@shared/types"
-import { use, useEffect, useState } from "react"
-import { ChatArea } from "../Components/ChatArea"
+import { use } from "react"
+import ChatArea from "../ChatArea"
 
 import styles from "../ChatPage.module.css"
-import { InputBar } from "../Components/ChatInputBar"
+import { InputBar } from "../ChatInputBar"
 import { ArrowLeftToLine } from "lucide-react"
 
 type ChatDisplayProps = {

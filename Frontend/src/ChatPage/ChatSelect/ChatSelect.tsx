@@ -1,6 +1,6 @@
 import { SocketContext } from "@/Contexts/SocketContext"
 import { use, useEffect, useState } from "react"
-import ChatPreview from "./ChatPreview"
+import ChatPreview from "../ChatPreview"
 
 import styles from "./ChatSelect.module.css"
 

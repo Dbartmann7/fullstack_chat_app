@@ -1,12 +1,8 @@
 import { use, useEffect, useState } from "react"
 import styles from "./ChatPage.module.css"
 import { UserContext } from "../Contexts/userContext"
-import type { Chat, ChatData } from "@shared/types"
-import { ChatArea } from "./Components/ChatArea"
 import { SocketContext } from "@/Contexts/SocketContext"
-import { InputBar } from "./Components/ChatInputBar"
-import ChatPreview from "@/ChatSelect/ChatPreview"
-import ChatSelect from "@/ChatSelect/ChatSelect"
+import ChatSelect from "./ChatSelect"
 import ChatDisplay from "./ChatDisplay/ChatDisplay"
 
 

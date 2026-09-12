@@ -1,5 +1,5 @@
 import  { type Chat } from "@shared/types"
-import styles from "../ChatSelect.module.css"
+import styles from "./ChatPreview.module.css"
 import { use, useEffect, useState } from "react"
 import { SocketContext } from "@/Contexts/SocketContext"
 
@@ -22,7 +22,7 @@ const ChatPreview = ({data, index}:ChatPreviewProps) => {
     }, [data])
 
     return(
-        <div className={styles.previewContainer} onClick={() => setSelectedChat(index)}>
+        <div className={styles.container} onClick={() => setSelectedChat(index)}>
             <h2>{data.partner}</h2>
             <p>{messagePreview}</p>
         </div>

@@ -8,10 +8,10 @@ export type Chat = {
   id:number;
   partner_id:number
   partner:string;
-  messages:Message[];
+  messages:MessageType[];
 }
 
-export type Message = {
+export type MessageType = {
   id:number;
   chat_id:number
   sender_id:number;

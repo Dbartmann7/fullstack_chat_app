@@ -1,14 +1,14 @@
 import styles from "./Chat.module.css"
-import type { ChatData, Message } from "../../../shared/types"
+import type { ChatData, MessageType } from "../../../../shared/types"
 import { use, useEffect, useState } from "react"
-import { UserContext } from "../Contexts/userContext"
+import { UserContext } from "../../Contexts/userContext"
 
 
 type ChatProps = {
-    chatData:Message
+    chatData:MessageType
 }
 
-const Chat:React.FC<ChatProps> = ({chatData}:ChatProps) => {
+const Message:React.FC<ChatProps> = ({chatData}:ChatProps) => {
     const [outlineStyle, setOutlineStyle] = useState<string>("")
     const {userData} = use(UserContext)
     
@@ -27,4 +27,4 @@ const Chat:React.FC<ChatProps> = ({chatData}:ChatProps) => {
     )
 }
 
-export default Chat
+export default Message
