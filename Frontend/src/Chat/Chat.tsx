@@ -20,7 +20,9 @@ const Chat:React.FC<ChatProps> = ({chatData}:ChatProps) => {
     // }, [])
     return(
         <div className={`${styles.chat}  ${dynamicClasses}`}>
-            {chatData.body}
+            <p className={`${styles.chatBody}`}>
+                {chatData.body}
+            </p>
         </div>
     )
 }
