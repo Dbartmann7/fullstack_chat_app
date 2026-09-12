@@ -9,10 +9,10 @@ type ChatPreviewProps = {
 }
 
 const ChatPreview = ({data, index}:ChatPreviewProps) => {
-    const {selectChat} = use(SocketContext)
+    const {setSelectedChat} = use(SocketContext)
 
     return(
-        <div className={styles.previewContainer} onClick={() => selectChat(index)}>
+        <div className={styles.previewContainer} onClick={() => setSelectedChat(index)}>
             <h2>{data.partner}</h2>
             <p>{data.messages[data.messages.length-1]?.body || "Start Chatting!"}</p>
         </div>

@@ -14,8 +14,8 @@ const ChatSelect = ({}:ChatSelectProps) => {
     return (
         <div className={styles.container}>
         {
-            chats.map((chat, i) => {
-                return <ChatPreview data={chat} index={i}/>
+            Array.from(chats.values()).map((chat, i) => {
+                return <ChatPreview data={chat} index={chat.id} key={i}/>
             })  
         }
         </div>

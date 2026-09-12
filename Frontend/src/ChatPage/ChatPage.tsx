@@ -12,13 +12,13 @@ import ChatDisplay from "./ChatDisplay/ChatDisplay"
 
 export const ChatPage = () => {
   const { checkCredentials, logout} = use(UserContext);
-  const {isConnected, createSocket, selectedChat} = use(SocketContext);
+  const {isConnected, selectedChat} = use(SocketContext);
   
 
-  useEffect(() => {
-    createSocket()
+  // useEffect(() => {
+  //   createSocket()
 
-  }, [])
+  // }, [])
 
   useEffect(() => {
 
@@ -40,18 +40,12 @@ export const ChatPage = () => {
 
   return(
       <main className={styles.mobileMain}>
-        
-        {/* <div className={styles.chatMain}> */}
-          { 
-          selectedChat ?
-          <ChatDisplay/>
-            
-            :
+        { 
+          selectedChat < 0 ?
             <ChatSelect />
-            
-          }
-          
-        {/* </div> */}
+            :
+            <ChatDisplay/>
+        }
       </main>
   )
 }

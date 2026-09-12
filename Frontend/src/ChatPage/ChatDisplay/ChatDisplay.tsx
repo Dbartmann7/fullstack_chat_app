@@ -15,23 +15,19 @@ type ChatDisplayProps = {
 
 
 const ChatDisplay = ({ }:ChatDisplayProps) => {
-    const {selectChat, selectedChat} = use(SocketContext)
-    
-
-    if(!selectedChat){
-        return "no chat selected"
-    }
+    const {setSelectedChat, currentChat} = use(SocketContext)
+  
 
     return (
         <div className={styles.chatMain}>
             <div style={{"display":"flex", "justifyContent":"space-between"}}>
-                <button className={styles.backBtn} onClick={() => selectChat(-1)}>
+                <button className={styles.backBtn} onClick={() => setSelectedChat(-1)}>
                     <ArrowLeftToLine className={styles.backIcon} />
                 </button>
-                <h1 className={styles.chatHeader}>{selectedChat.partner}</h1>                
+                <h1 className={styles.chatHeader}>{currentChat.partner}</h1>                
             </div>
             
-            <ChatArea/>
+            <ChatArea messages={currentChat.messages}/>
             < InputBar/>
             
         </div> 
