@@ -6,7 +6,7 @@ import cookieParser from "cookie-parser"
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import { Server } from 'socket.io'
 import { StatusCodes } from "http-status-codes";
-import type { ChatData, jwtData, Message, SocketRes } from '@shared/types'
+import type { ChatData, jwtData, MessageType, SocketRes } from '@shared/types'
 import dotenv from "dotenv"
 import "dotenv/config";
 import authRouter from './routes/authRoutes'
@@ -58,6 +58,35 @@ app.get('/', (req, res) => {
     res.send("Server for Chat App")
 })
 
+
+const deleteStaleAccounts = async () => {
+    try{
+        let toBeDeleted:{id:number, chat_ids:number[]}[] = (await db.query(`SELECT u.id, 
+            COALESCE(array_agg(cm.chat_id) FILTER (WHERE cm.chat_id IS NOT NULL), '{}') AS chat_ids 
+            FROM users u 
+            LEFT JOIN chat_members cm ON cm.user_id = u.id
+            WHERE u.timeCreated < $1 AND u.istemporary = true
+            GROUP BY u.id`, [Date.now() - 1000 * 60 * 20])
+        ).rows
+        console.log(toBeDeleted)
+        if(toBeDeleted.length === 0) return
+        for(const item of toBeDeleted){
+           for(const chat_id of item.chat_ids){
+                await db.query(`DELETE FROM chats WHERE id = $1`, [chat_id])
+                // ON DELETE CASCADE rull means all other user info (chats, messages) are deleted
+            }
+           await db.query(`DELETE FROM users WHERE id = $1`, [item.id])
+        }
+            
+    }catch(err){
+        console.log(err)
+    }
+}
+deleteStaleAccounts()
+setInterval(async () => {
+        deleteStaleAccounts()        
+   }, 1000 * 60
+)
 //  ************************* Socket.io  *************************  \\
 
 const io = new Server(server, {
@@ -97,7 +126,7 @@ io.on('connection', async (socket) => {
         console.log(`user disconnected: ${reason}`)
     })
 
-    socket.on("sendMessage", async (req:Message, callback) => {
+    socket.on("sendMessage", async (req:MessageType, callback) => {
         try{
             const messageRes = await db.query('INSERT INTO messages (chat_id, sender_id, body, created_at) VALUES ($1, $2, $3, $4) RETURNING id', 
                 [req.chat_id, req.sender_id, req.body, req.created_at]

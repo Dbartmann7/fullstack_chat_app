@@ -84,8 +84,8 @@ export const signUp = async (req:Request, res:Response) => {
     
     try{
         const hashedPass = await bcrypt.hash(password, 10)
-        const dbRes = await db.query('INSERT INTO users (username, password) VALUES ($1, $2)', 
-            [username, hashedPass]
+        const dbRes = await db.query('INSERT INTO users (username, password, istemporary, timecreated) VALUES ($1, $2, $3, $4)', 
+            [username, hashedPass, true, Date.now()]
         )
         res.status(200).send({message:"Account created successfully", ok:true})
     }catch(err){

@@ -12,13 +12,13 @@ type LoginSectionProps = {
 
 const testAccounts:TestAccount[] = [
     {
-        username: "Tony S",
-        password: "Test1",
+        username: "TonySoprano",
+        password: "Test123456789",
         imgSrc:tonyPic
     },
     {
         username:"Christopher",
-        password:"Test1",
+        password:"Test123456789",
         imgSrc:christopherPic
     },
     {
