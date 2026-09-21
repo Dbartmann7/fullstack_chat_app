@@ -1,4 +1,4 @@
-import { use, useEffect, useState } from "react"
+import { use, useEffect} from "react"
 import styles from "./ChatPage.module.css"
 import { UserContext } from "../Contexts/userContext"
 import { SocketContext } from "@/Contexts/SocketContext"
@@ -10,11 +10,6 @@ export const ChatPage = () => {
   const { checkCredentials, logout} = use(UserContext);
   const {isConnected, selectedChat} = use(SocketContext);
   
-
-  // useEffect(() => {
-  //   createSocket()
-
-  // }, [])
 
   useEffect(() => {
 
@@ -32,8 +27,6 @@ export const ChatPage = () => {
   }, [isConnected])
 
 
-
-
   return(
       <main className={styles.mobileMain}>
         { 
@@ -42,6 +35,7 @@ export const ChatPage = () => {
             :
             <ChatDisplay/>
         }
+    
       </main>
   )
 }

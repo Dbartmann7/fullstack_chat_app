@@ -12,8 +12,8 @@ const ChatArea:FC<ChatAreaProps> = ({messages}:ChatAreaProps) => {
     return(
         <div className={styles.chatArea}>
             <ul>
-                {messages.map((message) => {
-                    return <Message chatData={message}/>
+                {messages.map((message, i) => {
+                    return <Message chatData={message} key={i}/>
                 })}
             </ul>
         </div>

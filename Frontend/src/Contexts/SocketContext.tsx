@@ -1,7 +1,7 @@
 
 
 import api from "@/util/api";
-import { type Chat, type Message } from "@shared/types";
+import { type Chat, type MessageType } from "@shared/types";
 import { createContext, use, useCallback, useEffect, useRef, useState, type FC, type ReactNode, type SetStateAction } from "react";
 import { io, type Socket } from "socket.io-client";
 import { UserContext } from "./userContext";
@@ -68,7 +68,7 @@ export const SocketContextContainer:FC<ContextProps> = ({children}:ContextProps)
         console.log("reconnected")
     }, [])
 
-    const handleNewMessage = useCallback((newMessage:Message) => {
+    const handleNewMessage = useCallback((newMessage:MessageType) => {
         console.log(newMessage)
         setChats((prevChats) => {
             let newChats:Map<number, Chat> = new Map(JSON.parse(JSON.stringify([...prevChats])))
@@ -124,9 +124,9 @@ export const SocketContextContainer:FC<ContextProps> = ({children}:ContextProps)
         }
         socketRef.current.emit("sendMessage", {chat_id:selectedChat, sender_id:userData.id, body:body, createdAt:Date.now()}, (res:any) => {
      
-            return res.ok
+          
         })
-        return false
+        return true
     }
     
     
