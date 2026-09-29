@@ -87,6 +87,7 @@ export const LoginSection = ({}:LoginSectionProps) => {
                         setValue={setUsername}
                         maxLength={20}
                         placeholder="Username..."
+                        submitFn={handleLogin}
                     />
                     <Input
                         type="password"
@@ -94,6 +95,7 @@ export const LoginSection = ({}:LoginSectionProps) => {
                         setValue={setPassword}
                         maxLength={32}
                         placeholder="Password..."
+                        submitFn={handleLogin}
                     />
                 </div>
                 <div className={styles.btns}>

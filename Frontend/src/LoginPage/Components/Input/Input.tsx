@@ -1,6 +1,6 @@
 import type { Dispatch, SetStateAction } from "react"
 import styles from "./Input.module.css"
-
+import { type KeyboardEvent } from "react"
 
 type InputProps = {
     value:string,
@@ -8,11 +8,14 @@ type InputProps = {
     type?:string,
     maxLength?:number
     placeholder?:string
+    submitFn?:() => void
 }
 
-export const Input = ({value, setValue, type="text", maxLength, placeholder}:InputProps) => {
+export const Input = ({value, setValue, type="text", maxLength, placeholder, submitFn}:InputProps) => {
     
-
+    const handleSubmit = (e:KeyboardEvent<HTMLInputElement>) => {
+        if(e.key === "Enter" && submitFn) submitFn()
+    }
 
     return(
         <div className={styles.inputContainer}>
@@ -23,6 +26,7 @@ export const Input = ({value, setValue, type="text", maxLength, placeholder}:Inp
                 type={type}
                 maxLength={maxLength}
                 placeholder={placeholder}
+                onKeyDown={handleSubmit}
             />
         </div>
     )

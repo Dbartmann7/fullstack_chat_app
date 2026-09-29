@@ -5,7 +5,7 @@ import { use } from "react"
 import ChatArea from "../ChatArea"
 
 import styles from "../ChatPage.module.css"
-import { InputBar } from "../ChatInputBar"
+import { InputBar } from "../InputBar"
 import { ArrowLeftToLine } from "lucide-react"
 
 type ChatDisplayProps = {
