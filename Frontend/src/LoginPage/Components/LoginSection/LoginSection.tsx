@@ -6,6 +6,10 @@ import { TestAccountBtn } from "./Components/TestAccountBtn"
 import type { TestAccount } from "@/util/types"
 import tonyPic from "@/assets/TestProfPics/Tony.jpg"
 import christopherPic from "@/assets/TestProfPics/Christopher.jpg"
+import spongebobPic from "@/assets/TestProfPics/spongebob.webp"
+import patrickPic from "@/assets/TestProfPics/Patrick.jpg"
+import walterPic from "@/assets/TestProfPics/walter.jpeg"
+import jessePic from "@/assets/TestProfPics/jesse.webp"
 type LoginSectionProps = {
 
 }
@@ -22,24 +26,24 @@ const testAccounts:TestAccount[] = [
         imgSrc:christopherPic
     },
     {
-        username: "Tony S",
-        password: "Test1",
-        imgSrc:tonyPic
+        username: "Spongebob",
+        password: "Test123456789",
+        imgSrc:spongebobPic
     },
     {
-        username:"Christopher",
-        password:"Test1",
-        imgSrc:christopherPic
+        username:"Patrick",
+        password:"Test123456789",
+        imgSrc:patrickPic
     },
     {
-        username: "Tony S",
-        password: "Test1",
-        imgSrc:tonyPic
+        username: "WalterWhite",
+        password: "Test123456789",
+        imgSrc:walterPic
     },
     {
-        username:"Christopher",
-        password:"Test1",
-        imgSrc:christopherPic
+        username:"JessePinkman",
+        password:"Test123456789",
+        imgSrc:jessePic
     }
 ]
 

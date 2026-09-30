@@ -32,3 +32,36 @@ export const getChats = async (req:Request, res:Response) => {
     }
 
 }
+
+export const createChat = async (req:Request, res:Response) => {
+    const {user_id1, user_id2} = req.body
+    
+    try{
+        const existingChat = (await db.query(`
+            SELECT chat_id FROM chat_members
+            WHERE user_id IN ($1, $2)
+            GROUP BY chat_id HAVING COUNT(user_id) = 2
+        `, [user_id1, user_id2])).rows
+        if(existingChat.length > 0){
+            res.status(200).send({message:"Chat already exists", ok:false})
+            return
+        }
+
+        const dbRes = await db.query(`
+            INSERT INTO chats DEFAULT VALUES
+            RETURNING id
+        `)
+        
+        const chat_id = dbRes.rows[0].id
+
+        await db.query(`
+            INSERT INTO chat_members(chat_id, user_id) VALUES
+            ($1, $2), ($1, $3)
+        `, [chat_id, user_id1, user_id2])
+
+        res.status(200).send({message:"chat successfully created", ok:true})
+    }catch(err){
+        console.log(err)
+        res.status(500).send({message:"there was a problem creating the chat", ok:false})
+    }
+}
