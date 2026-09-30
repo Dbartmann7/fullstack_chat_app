@@ -1,4 +1,4 @@
-import { use, useRef, useState, type RefObject } from "react"
+import { use, useEffect, useRef, useState, type KeyboardEvent, type RefObject } from "react"
 import styles from "./ChatInputBar.module.css"
 import { Send } from "lucide-react"
 import { SocketContext } from "@/Contexts/SocketContext"
@@ -6,12 +6,12 @@ import { SocketContext } from "@/Contexts/SocketContext"
 
 type InputBarProps = {
     maxLength?:number
-    isPassword?:boolean,
-    onKeyDown?:any
-    multiline?:boolean
+    submitFn:() => void
 }
 
 export const InputBar = ({maxLength = 200000}:InputBarProps) => {
+    const [keysPressed, setKeysPressed] = useState<Set<string>>(new Set<string>) 
+
     let [value, setValue] = useState<string>("");
     let inputDivRef:RefObject<HTMLDivElement | null> = useRef(null)
     let {sendMessage} = use(SocketContext)
@@ -36,8 +36,15 @@ export const InputBar = ({maxLength = 200000}:InputBarProps) => {
             moveCaretToEnd(inputDivRef.current!)
         }
 
+    }   
+
+    const handleKeyDown = (e:KeyboardEvent<HTMLDivElement>) => {
+        if(e.key === "Enter") {
+            sendMessage(value)
+        }
     }
 
+ 
     const handleSend = () => {
         sendMessage(value)
     }
@@ -49,8 +56,12 @@ export const InputBar = ({maxLength = 200000}:InputBarProps) => {
                 id="input"
                 className={`${styles.input} `}
                 contentEditable="plaintext-only"
-                onInput={(e) => {handleInput(e.currentTarget.innerText)}} 
+                onInput={(e) => {
+                    e.preventDefault()
+                    handleInput(e.currentTarget.innerText)
+                }} 
                 ref={inputDivRef}
+                onKeyDown={handleKeyDown}
             >
             </div>
             <button className={`${styles.sendBtn}`} onClick={handleSend}>

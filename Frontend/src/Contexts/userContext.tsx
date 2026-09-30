@@ -40,7 +40,7 @@ export const UserContextContainer:FC<ContextProps> = ({children}:ContextProps) =
     const [authLoading, setAuthLoading] = useState<boolean>(true)
     const checkCredentials = async () => {
         try{
-            const res = await api.get("/api/auth/me", {withCredentials:true})
+            const res = await api.get("/api/user/me", {withCredentials:true})
             if(res.status === 200){
                 setUserData({id:res.data.userData.user_id, username:res.data.userData.username})
                 setIsLoggedIn(true)
@@ -71,7 +71,7 @@ export const UserContextContainer:FC<ContextProps> = ({children}:ContextProps) =
 
     const login = async (username:string = "", password:string = "") => {
         try{
-            const res = await api.post("/api/auth/login", {
+            const res = await api.post("/api/user/login", {
                 username:username,
                 password:password,
             
@@ -115,7 +115,7 @@ export const UserContextContainer:FC<ContextProps> = ({children}:ContextProps) =
         }
         
         try{
-            const res = await api.post("/api/auth/signup", {
+            const res = await api.post("/api/user/signup", {
                 username:username,
                 password:password,
             
@@ -137,7 +137,7 @@ export const UserContextContainer:FC<ContextProps> = ({children}:ContextProps) =
     }
     
     const logout = async () => {
-        await api.post("/api/auth/logout", {}, {
+        await api.post("/api/user/logout", {}, {
             withCredentials:true
         })
         setIsLoggedIn(false)

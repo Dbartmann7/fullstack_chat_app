@@ -94,3 +94,23 @@ export const signUp = async (req:Request, res:Response) => {
     }
     
 }
+
+export const findUsers = async (req:Request, res:Response) => {
+    console.log(req.query)
+    const {username} = req.query
+    
+    try{
+        const users = await db.query(
+            `SELECT u.username, u.id,
+            similarity(username, $1) AS score
+            FROM users u
+            WHERE similarity(username, $1) > 0.005
+            ORDER BY score DESC;
+        `, [username])
+        console.log(users.rows)
+        res.status(200).send({body:users.rows, ok:true})
+    }catch(err){
+        console.log(err)
+        res.status(500).send({message:"there was a problem fetching users", ok:false})
+    }
+}

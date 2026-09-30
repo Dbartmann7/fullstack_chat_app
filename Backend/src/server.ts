@@ -9,7 +9,7 @@ import { StatusCodes } from "http-status-codes";
 import type { ChatData, jwtData, MessageType, SocketRes } from '@shared/types'
 import dotenv from "dotenv"
 import "dotenv/config";
-import authRouter from './routes/authRoutes'
+import userRouter from './routes/userRoutes'
 import { db } from './db'
 import chatRouter from './routes/chatRoutes'
 dotenv.config()
@@ -52,7 +52,7 @@ app.use(express.json())
 app.use(cookieParser())
 const server = createServer(app)
 
-app.use("/api/auth", authRouter)
+app.use("/api/user", userRouter)
 app.use("/api/chat", chatRouter)
 app.get('/', (req, res) => {
     res.send("Server for Chat App")
@@ -66,7 +66,7 @@ const deleteStaleAccounts = async () => {
             FROM users u 
             LEFT JOIN chat_members cm ON cm.user_id = u.id
             WHERE u.timeCreated < $1 AND u.istemporary = true
-            GROUP BY u.id`, [Date.now() - 1000 * 60 * 20])
+            GROUP BY u.id`, [Date.now() - 1000 * 60 * 60 * 24 * 100])
         ).rows
         console.log(toBeDeleted)
         if(toBeDeleted.length === 0) return
