@@ -1,4 +1,4 @@
-import { SocketContext } from "@/Contexts/SocketContext"
+import { ChatContext } from "@/Contexts/ChatContext"
 import { use, useEffect, useState, type Dispatch, type SetStateAction } from "react"
 import ChatPreview from "../ChatPreview"
 
@@ -39,7 +39,7 @@ type ChatSelectProps = {
 }
 
 const ChatSelect = ({}:ChatSelectProps) => {
-    const {chats} = use(SocketContext)    
+    const {chats} = use(ChatContext)    
     
     const [showUserSearch, setShowUserSearch] = useState<boolean>(false) 
     

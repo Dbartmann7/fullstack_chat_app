@@ -1,6 +1,6 @@
 
 
-import { SocketContext } from "@/Contexts/SocketContext"
+import { ChatContext } from "@/Contexts/ChatContext"
 import { use } from "react"
 import ChatArea from "../ChatArea"
 
@@ -14,7 +14,7 @@ type ChatDisplayProps = {
 
 
 const ChatDisplay = ({ }:ChatDisplayProps) => {
-    const {setSelectedChat, currentChat} = use(SocketContext)
+    const {setSelectedChat, currentChat} = use(ChatContext)
   
 
     return (

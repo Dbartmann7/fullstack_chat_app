@@ -1,14 +1,13 @@
-
-
 import api from "@/util/api";
-import { type Chat, type MessageType } from "@shared/types";
+import { type Chat, type MessageType, type UserData } from "@shared/types";
 import { createContext, use, useCallback, useEffect, useRef, useState, type FC, type ReactNode, type SetStateAction } from "react";
 import { io, type Socket } from "socket.io-client";
 import { UserContext } from "./userContext";
 
-type SocketContextValue = {
+type ChatContextValue = {
     isConnected:boolean,
     sendMessage: (body:string) => boolean,
+    createChat: (partnerData:UserData, userData:UserData) => void,
     chats:Map<number, Chat>
     selectedChat:number
     setSelectedChat:React.Dispatch<React.SetStateAction<number>>
@@ -16,7 +15,7 @@ type SocketContextValue = {
 }
 
 
-export const SocketContext = createContext<SocketContextValue>({
+export const ChatContext = createContext<ChatContextValue>({
     isConnected: false,
     sendMessage: (body: string): boolean => {
         throw new Error("Function not implemented.");
@@ -31,6 +30,9 @@ export const SocketContext = createContext<SocketContextValue>({
         partner_id: 0,
         partner: "",
         messages: []
+    },
+    createChat: function (partnerData: UserData, userData: UserData): void {
+        throw new Error("Function not implemented.");
     }
 })
 
@@ -38,7 +40,7 @@ type ContextProps = {
     children:ReactNode
 }
 
-export const SocketContextContainer:FC<ContextProps> = ({children}:ContextProps) => {
+export const ChatContextContainer:FC<ContextProps> = ({children}:ContextProps) => {
     const socketRef = useRef<Socket | null>(null)
     const [isConnected, setIsConnected] = useState<boolean>(false)
     const [chats, setChats] = useState<Map<number, Chat>>(new Map<number, Chat>())
@@ -79,6 +81,7 @@ export const SocketContextContainer:FC<ContextProps> = ({children}:ContextProps)
                 return newChats
             }) 
     }, [])
+
     const createSocket = () => {
         if(socketRef.current){
             console.log("Socket already exists")
@@ -96,6 +99,7 @@ export const SocketContextContainer:FC<ContextProps> = ({children}:ContextProps)
             socket.on("disconnect", handleDisconnect);
             socket.io.on("reconnect", handleReconnect)
             socket.on("newMessage", handleNewMessage)
+            socket.on("newChat", ()=>{})
             socketRef.current = socket
         }
     }
@@ -129,7 +133,19 @@ export const SocketContextContainer:FC<ContextProps> = ({children}:ContextProps)
         return true
     }
     
-    
+    const createChat = async (partnerData:UserData, userData:UserData) => {
+        let res = await api.post("/api/chat/", {
+            partner_id:partnerData.id,
+            user_id:userData.id,
+            partnerName: partnerData.username
+        }, {withCredentials:true})
+        setChats((prev) => {
+            const newChats = new Map(prev)
+            newChats.set(res.data.body.id, res.data.body)
+            return newChats
+        })
+    }
+
     useEffect(() => {
         const fetchChats = async () => {
             try{
@@ -163,13 +179,12 @@ export const SocketContextContainer:FC<ContextProps> = ({children}:ContextProps)
             setCurrentChat(targetChat)
         }
     }, [selectedChat, chats])
-    // useEffect(() => {
-    //     console.log(chats)
-    // }, [chats])
+   
     const value = {
         
         isConnected:isConnected,
         sendMessage:sendMessage,
+        createChat:createChat,
         chats:chats,     
         selectedChat:selectedChat,
         setSelectedChat:setSelectedChat,
@@ -177,8 +192,8 @@ export const SocketContextContainer:FC<ContextProps> = ({children}:ContextProps)
     }
 
     return(
-        <SocketContext.Provider value={value}>
+        <ChatContext.Provider value={value}>
             {children}
-        </SocketContext.Provider>
+        </ChatContext.Provider>
     )
 }

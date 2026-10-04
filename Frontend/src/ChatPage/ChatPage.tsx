@@ -1,14 +1,14 @@
 import { use, useEffect} from "react"
 import styles from "./ChatPage.module.css"
 import { UserContext } from "../Contexts/userContext"
-import { SocketContext } from "@/Contexts/SocketContext"
+import { ChatContext } from "@/Contexts/ChatContext"
 import ChatSelect from "./ChatSelect"
 import ChatDisplay from "./ChatDisplay/ChatDisplay"
 
 
 export const ChatPage = () => {
   const { checkCredentials, logout} = use(UserContext);
-  const {isConnected, selectedChat} = use(SocketContext);
+  const {isConnected, selectedChat} = use(ChatContext);
   
 
   useEffect(() => {

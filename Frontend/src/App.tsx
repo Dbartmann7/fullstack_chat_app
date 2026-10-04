@@ -3,9 +3,9 @@ import './App.css'
 
 import {UserContext} from './Contexts/userContext'
 import { LoginPage } from './LoginPage'
-import { SocketContextContainer } from './Contexts/SocketContext'
-import { ChatPage } from './ChatPage'
 
+import { ChatPage } from './ChatPage'
+import { ChatContextContainer } from './Contexts/ChatContext'
 
 function App() {
   const {isLoggedIn, authLoading} = use(UserContext)
@@ -18,9 +18,9 @@ function App() {
 
       <div className='app'>
         {isLoggedIn ? 
-            <SocketContextContainer>
+            <ChatContextContainer>
               <ChatPage/>
-            </SocketContextContainer>
+            </ChatContextContainer>
           : 
             <LoginPage/>
         }

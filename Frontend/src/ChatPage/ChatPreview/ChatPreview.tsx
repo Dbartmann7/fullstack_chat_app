@@ -1,7 +1,7 @@
 import  { type Chat } from "@shared/types"
 import styles from "./ChatPreview.module.css"
 import { use, useEffect, useState } from "react"
-import { SocketContext } from "@/Contexts/SocketContext"
+import { ChatContext } from "@/Contexts/ChatContext"
 
 type ChatPreviewProps = {
     data:Chat
@@ -9,7 +9,7 @@ type ChatPreviewProps = {
 }
 
 const ChatPreview = ({data, index}:ChatPreviewProps) => {
-    const {setSelectedChat} = use(SocketContext)
+    const {setSelectedChat} = use(ChatContext)
     const [messagePreview, setMessagePreview] = useState<string>("")
 
     useEffect(() => {

@@ -1,12 +1,11 @@
 import { use, useEffect, useRef, useState, type KeyboardEvent, type RefObject } from "react"
 import styles from "./ChatInputBar.module.css"
 import { Send } from "lucide-react"
-import { SocketContext } from "@/Contexts/SocketContext"
+import { ChatContext } from "@/Contexts/ChatContext"
 
 
 type InputBarProps = {
     maxLength?:number
-    submitFn:() => void
 }
 
 export const InputBar = ({maxLength = 200000}:InputBarProps) => {
@@ -14,7 +13,7 @@ export const InputBar = ({maxLength = 200000}:InputBarProps) => {
 
     let [value, setValue] = useState<string>("");
     let inputDivRef:RefObject<HTMLDivElement | null> = useRef(null)
-    let {sendMessage} = use(SocketContext)
+    let {sendMessage} = use(ChatContext)
     
     const moveCaretToEnd = (el:HTMLElement) => {
         el.focus();

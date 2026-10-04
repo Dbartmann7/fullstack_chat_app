@@ -4,6 +4,7 @@ import { type UserData } from "@shared/types"
 import { use, useState, type SetStateAction } from "react"
 import styles from "./FindUser.module.css"
 import { UserContext } from "@/Contexts/userContext"
+import { ChatContext } from "@/Contexts/ChatContext"
 
 
 const UserItem = ({data, onClick}:{data:UserData, onClick:(data:UserData) => void}) => {
@@ -26,6 +27,7 @@ const FindUserPage = ({}:FindUserProps) => {
     const [foundUsers, setFoundUsers] = useState<UserData[]>([])
 
     const {userData} = use(UserContext) 
+    const {createChat} = use(ChatContext)
 
     const submitFn = async () => {
         const users = await api.get("/api/user/", 
@@ -40,11 +42,8 @@ const FindUserPage = ({}:FindUserProps) => {
     }
 
     const onUserClick = async (data:UserData) => {
-        let res = await api.post("/api/chat/", {
-            user_id1:data.id,
-            user_id2:userData.id
-        }, {withCredentials:true})
-        console.log(res)
+        createChat(data, userData)
+        
     }
 
     return (
