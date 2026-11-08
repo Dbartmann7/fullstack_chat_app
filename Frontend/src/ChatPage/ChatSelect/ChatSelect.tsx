@@ -29,7 +29,7 @@ const FindUserToggleBtn = ({toggleVal, toggleFn}:FindUserToggleBtnProps) => {
     }, [toggleVal])
 
     return (
-        <Button onClick={handleClick} Logo={Icon}/>
+        <Button className={styles.findUserToggleBtn} onClick={handleClick} Logo={Icon}/>
     )
 
 }
@@ -50,9 +50,13 @@ const ChatSelect = ({}:ChatSelectProps) => {
             showUserSearch ? 
                 <FindUserPage/>
             :
-                Array.from(chats.values()).map((chat, i) => {
-                    return <ChatPreview data={chat} index={chat.id} key={i}/>
-                })
+                <ul className={styles.userList}>
+                {
+                    Array.from(chats.values()).map((chat, i) => {
+                        return <ChatPreview data={chat} index={chat.id} key={i}/>
+                    })
+                }
+                </ul>
             
         }
         </div>

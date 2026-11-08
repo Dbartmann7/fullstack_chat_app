@@ -2,7 +2,7 @@ import { Chat, jwtData } from "@shared/types";
 import { Request, Response } from "express";
 import  jwt from "jsonwebtoken";
 
-import { db } from "@/db";
+import { db } from "../db";
 
 export const getChats = async (req:Request, res:Response) => {
 
@@ -16,14 +16,13 @@ export const getChats = async (req:Request, res:Response) => {
             [userData.user_id]
         )
             
-        console.log(chatsRes.rows)
+       
         let chats = chatsRes.rows
         for(let i=0; i<chats.length; i++){
             let messages = (await db.query(`SELECT * FROM messages WHERE chat_id = $1
                                             ORDER BY created_at ASC`, 
                             [chats[i].id])).rows || []    
             chats[i] = {...chats[i], messages:messages}
-            console.log(chats[i])
         }
         
         res.status(200).send({ok:true, body:chats, message:"Chats Fetched Successfully!"})

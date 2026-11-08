@@ -6,14 +6,16 @@ type ButtonProps  = {
     className?:string
     Logo?:LucideIcon
     logoClassName?:string
+    label?:string
 }
 
-const Button = ({onClick, className, Logo, logoClassName}:ButtonProps) => {
+const Button = ({onClick, className, Logo, logoClassName, label}:ButtonProps) => {
 
 
     return (
         <button onClick={onClick} className={`${styles.container} ${className}`}>
             {Logo && <Logo className={`${logoClassName}`}/>}
+            {label}
         </button>
     )
 

@@ -1,7 +1,7 @@
 import { Input } from "@/LoginPage/Components/Input"
 import api from "@/util/api"
 import { type UserData } from "@shared/types"
-import { use, useState, type SetStateAction } from "react"
+import { use, useState } from "react"
 import styles from "./FindUser.module.css"
 import { UserContext } from "@/Contexts/userContext"
 import { ChatContext } from "@/Contexts/ChatContext"

@@ -9,7 +9,6 @@ import { JWT_LIFE } from "../util/auth"
 export const verifyJWT = async (req:Request, res:Response) => {
     // if valid jwt exists, login straight away
     const token = req.cookies.token
-    console.log(token)
     if(!token){
         res.status(401).send({message:"Invalid credentials"})    
         return
@@ -54,7 +53,7 @@ export const login = async (req:Request, res:Response) => {
 
     res.cookie("token", token, {
         httpOnly:true,
-        secure: false,
+        secure: true,
         sameSite:"lax",
         maxAge: JWT_LIFE
     }).status(200).send({message:"login successful", userData:payload})
@@ -96,7 +95,6 @@ export const signUp = async (req:Request, res:Response) => {
 }
 
 export const findUsers = async (req:Request, res:Response) => {
-    console.log(req.query)
     const {username} = req.query
     
     try{
@@ -107,7 +105,6 @@ export const findUsers = async (req:Request, res:Response) => {
             WHERE similarity(username, $1) > 0.005
             ORDER BY score DESC;
         `, [username])
-        console.log(users.rows)
         res.status(200).send({body:users.rows, ok:true})
     }catch(err){
         console.log(err)

@@ -25,7 +25,7 @@ const ChatDisplay = ({ }:ChatDisplayProps) => {
                 </button>
                 <h1 className={styles.chatHeader}>{currentChat.partner}</h1>                
             </div>
-            
+            <p>This is a demo - Do not include sensitive info in chats</p>
             <ChatArea messages={currentChat.messages}/>
             < InputBar/>
             

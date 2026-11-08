@@ -17,12 +17,12 @@ type ChatContextValue = {
 
 export const ChatContext = createContext<ChatContextValue>({
     isConnected: false,
-    sendMessage: (body: string): boolean => {
+    sendMessage: (_body: string): boolean => {
         throw new Error("Function not implemented.");
     },
     chats: new Map<number, Chat>(),
     selectedChat: -1,
-    setSelectedChat: function (value: SetStateAction<number>): void {
+    setSelectedChat: function (_value: SetStateAction<number>): void {
         throw new Error("Function not implemented.");
     },
     currentChat: {
@@ -31,7 +31,7 @@ export const ChatContext = createContext<ChatContextValue>({
         partner: "",
         messages: []
     },
-    createChat: function (partnerData: UserData, userData: UserData): void {
+    createChat: function (_partnerData: UserData, _userData: UserData): void {
         throw new Error("Function not implemented.");
     }
 })
@@ -54,7 +54,7 @@ export const ChatContextContainer:FC<ContextProps> = ({children}:ContextProps) =
 
     const {userData} = use(UserContext)
     // update url for production build with env
-    const URL:string = 'http://localhost:3000';
+    const URL:string = import.meta.env.VITE_SERVER_URL || ""
     
     const handleConnect = useCallback(() => {
         setIsConnected(true)
@@ -126,7 +126,7 @@ export const ChatContextContainer:FC<ContextProps> = ({children}:ContextProps) =
         if(selectedChat < 0){
             throw Error("No chat selected, message cannot be sent")
         }
-        socketRef.current.emit("sendMessage", {chat_id:selectedChat, sender_id:userData.id, body:body, createdAt:Date.now()}, (res:any) => {
+        socketRef.current.emit("sendMessage", {chat_id:selectedChat, sender_id:userData.id, body:body, createdAt:Date.now()}, (_res:any) => {
      
           
         })

@@ -1,3 +1,5 @@
+import Cookies from 'js-cookie'
+
 import { UserContext } from "@/Contexts/userContext"
 import { use, useState } from "react"
 import styles from "./LoginSection.module.css"
@@ -10,6 +12,8 @@ import spongebobPic from "@/assets/TestProfPics/spongebob.webp"
 import patrickPic from "@/assets/TestProfPics/Patrick.jpg"
 import walterPic from "@/assets/TestProfPics/walter.jpeg"
 import jessePic from "@/assets/TestProfPics/jesse.webp"
+import Markdown from "react-markdown"
+import privacyNotice from "./privacy_notice.md?raw"
 type LoginSectionProps = {
 
 }
@@ -54,6 +58,10 @@ export const LoginSection = ({}:LoginSectionProps) => {
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
 
+    const [showPrivacyPopUp, setShowPrivacyPopUp] = useState<boolean>(() => {
+        return Cookies.get('isPrivacyAccepted') !== 'true'
+    })
+
 
     const handleLogin = async () => {
      
@@ -79,12 +87,23 @@ export const LoginSection = ({}:LoginSectionProps) => {
         }        
     }
 
+    const acknowledgePrivacyPopUp = () => {
+        Cookies.set("isPrivacyAccepted", 'true', {
+            path:'/',
+            sameSite:"Lax",
+        })
+        setShowPrivacyPopUp(false)
+
+    }
+
     return(
         <section className={styles.loginSection}>
             <div className={styles.topHalf}>
                 <h1 className={styles.title}>Login</h1>
                 {error}
-            
+                <p className={styles.disclaimer}>
+                    This is a demo - Do not use real usernames or passwords 
+                </p>
                 <div className={styles.inputsContainer}>
                     <Input 
                         value={username}
@@ -110,9 +129,8 @@ export const LoginSection = ({}:LoginSectionProps) => {
                         Sign Up
                     </button>
                 </div>
+                <button className={styles.popUpBtn} onClick={() => setShowPrivacyPopUp(true)}>How data is stored</button>
             </div>
-            
-            
             <div className={styles.testAccounts}>
                 {
                     testAccounts.map(acc => {
@@ -120,6 +138,14 @@ export const LoginSection = ({}:LoginSectionProps) => {
                     })
                 }
             </div>
+            { showPrivacyPopUp && 
+                <div className={styles.privacyPopUp}>
+                    <Markdown>
+                        {privacyNotice}
+                    </Markdown>
+                    <button className={styles.btn} onClick={acknowledgePrivacyPopUp}>Okay</button>
+                </div>
+            }
         </section>
     )
 }

@@ -9,7 +9,7 @@ const FindUserBtn = ({}:FindUserBtnProps) => {
     
 
     return (
-        <Button onClick={function (...args: any[]): void {
+        <Button onClick={function (): void {
             throw new Error("Function not implemented.")
         }} Logo={UserPlus}/>
     )

@@ -1,9 +1,25 @@
-.container{
+.container {
     position:relative;
     display: flex;
     flex-direction: column;
-    padding: 20px;
     gap:10px;
     width: 100%;
     box-sizing: border-box;
+}
+
+.findUserToggleBtn{
+    position: absolute;
+    right: 40px;
+    top:20px;
+}
+
+.userList {
+
+    padding:0;
+    height:90%;
+    overflow-y: scroll;
+    &>*{
+        padding-bottom: 5px;
+    }
+
 }

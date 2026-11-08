@@ -1,0 +1,38 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Frontend/Dockerfile
+    ports:
+      - "5173:5173"
+  db:
+    image: postgres:18
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ChatDB
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASS:?Set DB_PASS in the root .env}
+    volumes:
+      - postgres_data:/var/lib/postgresql
+      - ./init-db/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+      - ./init-db/demo-users.sql:/docker-entrypoint-initdb.d/02-demo-users.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ChatDB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  backend:
+    build:
+      context: .
+      dockerfile: Backend/Dockerfile
+    env_file:
+      - Backend/.env
+    environment:
+      - DB_HOST=db
+    depends_on:
+      db:
+        condition: service_healthy
+    ports: 
+      - "3000:3000"
+volumes:
+  postgres_data:

@@ -44,8 +44,10 @@ const verifyJWT = (token:string | undefined): jwtData | null => {
 //  ************************* Express *************************  \\
 const PORT:number = 3000
 const app = express()
+
+const clientURL = process.env.CLIENT_URL
 app.use(cors({
-        origin:"http://localhost:5173",
+        origin:clientURL,
         credentials:true
 }))
 app.use(express.json())
@@ -68,7 +70,7 @@ const deleteStaleAccounts = async () => {
             WHERE u.timeCreated < $1 AND u.istemporary = true
             GROUP BY u.id`, [Date.now() - 1000 * 60 * 60 * 24 * 100])
         ).rows
-        console.log(toBeDeleted)
+
         if(toBeDeleted.length === 0) return
         for(const item of toBeDeleted){
            for(const chat_id of item.chat_ids){
@@ -91,7 +93,7 @@ setInterval(async () => {
 
 const io = new Server(server, {
     cors:{
-        origin:"http://localhost:5173",
+        origin:clientURL,
         credentials:true
     }
 })
@@ -100,13 +102,12 @@ io.use((socket, next) => {
   
     const cookies = cookie.parse(socket.handshake.headers.cookie || "")
     const data:jwtData | null = verifyJWT(cookies.token)
-    console.log(data)
     if(!data){
-        next(new Error("Unauthorized"))
+        return next(new Error("Unauthorized"))
     }
 
     socket.data.user = data
-    next()
+    return next()
 
 })
 
@@ -131,7 +132,7 @@ io.on('connection', async (socket) => {
             const messageRes = await db.query('INSERT INTO messages (chat_id, sender_id, body, created_at) VALUES ($1, $2, $3, $4) RETURNING id', 
                 [req.chat_id, req.sender_id, req.body, req.created_at]
             )
-            console.log(messageRes.rows)
+
             const participants = await db.query('SELECT user_id FROM chat_members WHERE chat_id = $1', 
                 [req.chat_id]
             )
